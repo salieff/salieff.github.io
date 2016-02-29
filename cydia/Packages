@@ -1,38 +1,20 @@
 Package: org.salieff.esmodinstaller
-Version: 1.0-3
+Version: 1.0-1
 Architecture: iphoneos-arm
 Maintainer: Alexander S. Salieff <salieff@mail.ru>
 Installed-Size: 41124
 Depends: firmware (>= 5.0)
-Filename: ./org.salieff.esmodinstaller_1.0-3_iphoneos-arm.deb
-Size: 20209334
-MD5sum: f0793465c3f68a9cf4f34d942d5faf80
-SHA1: a6971dde46083ef6d245cfe32a7a68b3c48f8142
-SHA256: 2bb3cd2fe6bd7ffe394721257cd3f14ba688c67074b457ff3bb5fb11ce78a74c
+Filename: ./org.salieff.esmodinstaller_1.0-1_iphoneos-arm.deb
+Size: 20209324
+MD5sum: ae46afaf5657625dcab11551dbf75c47
+SHA1: 17c697d0b18f667df5e4e91de40cb2a2ebe74b55
+SHA256: 4e9b1ae99d814014e473311a899f80bd597b860b0608f591eab7436c7fd731af
 Section: Games
 Homepage: http://191.ru/es/
 Description: Everlasting Summer mods installer
  Utility which provides iOS-converted and verified mod-packs.
  Allows install, remove, update mod-packs, read descriptions and vote with likes/dislikes.
 Author: Alexander S. Salieff <salieff@mail.ru>
-Icon: file:///Applications/Cydia.app/Applications/org.salieff.esmodinstaller.png
+Icon: file:///Applications/ESManager.app/icon.png
 Name: ES Mod Installer
-
-Package: org.salieff.repoicons
-Version: 1.0-1
-Architecture: iphoneos-arm
-Essential: yes
-Maintainer: Alexander S. Salieff <salieff@mail.ru>
-Installed-Size: 72
-Filename: ./org.salieff.repoicons_1.0-1_iphoneos-arm.deb
-Size: 62964
-MD5sum: 68f634b8eb81645296e768a23e661adb
-SHA1: 80882a74ba6b5d30969fd5286118034cfcc150b1
-SHA256: 69c1d5b10aa45430c1602410899265122fc88017e4df58470ec4c51e58931500
-Section: Icons
-Homepage: http://191.ru/es/
-Description: Salieff repository icons
-Author: Alexander S. Salieff <salieff@mail.ru>
-Icon: file:////Applications/Cydia.app/Sections/Themes.png
-Name: Salieff repository icons
 
