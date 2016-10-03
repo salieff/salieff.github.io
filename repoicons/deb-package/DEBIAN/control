@@ -1,0 +1,12 @@
+Package: org.salieff.repoicons
+Name: Salieff repository icons
+Version: 1.0-1
+Essential: yes
+Section: Icons
+Architecture: iphoneos-arm
+Description: Salieff repository icons
+Homepage: http://191.ru/es/
+Author: Alexander S. Salieff <salieff@mail.ru>
+Maintainer: Alexander S. Salieff <salieff@mail.ru>
+Icon: file:////Applications/Cydia.app/Sections/Themes.png
+Installed-Size: 72
