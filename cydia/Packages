@@ -1,14 +1,14 @@
 Package: org.salieff.esmodinstaller
-Version: 1.0-1
+Version: 1.1-11
 Architecture: iphoneos-arm
 Maintainer: Alexander S. Salieff <salieff@mail.ru>
-Installed-Size: 41124
+Installed-Size: 41740
 Depends: firmware (>= 5.0)
-Filename: ./org.salieff.esmodinstaller_1.0-1_iphoneos-arm.deb
-Size: 20209324
-MD5sum: ae46afaf5657625dcab11551dbf75c47
-SHA1: 17c697d0b18f667df5e4e91de40cb2a2ebe74b55
-SHA256: 4e9b1ae99d814014e473311a899f80bd597b860b0608f591eab7436c7fd731af
+Filename: ./org.salieff.esmodinstaller_1.1-11_iphoneos-arm.deb
+Size: 21407604
+MD5sum: 88ac25c500fb67050d564f06fb6e95ec
+SHA1: 824e0abcb48fd1c4f58e93cfebdfe50f0297223a
+SHA256: d4cd3f852bf6bca54d1e3f43b914e3bdfb092e3e6952f23e17ead149e5a75c0c
 Section: Games
 Homepage: http://191.ru/es/
 Description: Everlasting Summer mods installer
