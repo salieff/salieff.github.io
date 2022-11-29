@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+        <title>ES Mod Installer</title>
+        <style>
+            ul {height:70vh; width:50vw;}
+            ul {overflow:hidden; overflow-y:scroll;}
+            li {cursor: pointer;}
+            tr {background-color: #96D4D4;}
+            #app_readme {height:10vh; width:95vw;}
+            .selected {background: #0f0;}
+            .flexrow {display: inline-grid; vertical-align: top; margin: 25px;}
+        </style>
+        <script type="text/javascript" src="index.js"></script>
+    </head>
+
+    <body onload="BodyMain()">
+        <textarea id="app_readme" disabled></textarea>
+        <div>
+            <button type="button" id="app_readme_save_button" disabled>Save</button>
+            <button type="button" id="app_readme_undo_button" disabled>Undo</button>
+        </div>
+        <span class="flexrow">
+            <ul id="mods_list"></ul>
+            <span>
+                <button type="button" id="add_list_entry_button" disabled>Add</button>
+                <button type="button" id="delete_list_entry_button" disabled>Delete</button>
+            </span>
+        </span>
+        <span class="flexrow">
+            <table>
+                <tr>
+                    <td>ID:</td>
+                    <td><input type="number" id="mod_id" name="mod_id" min="1" max="999999"></td>
+                </tr>
+
+                <tr>
+                    <td>Title:</td>
+                    <td><input type="text" id="mod_title" name="mod_title" size="90"></td>
+                </tr>
+
+                <tr>
+                    <td>Status:</td>
+                    <td>
+                        <input type="radio" id="mod_status_completed" name="mod_status" value="окончен">
+                        <label for="mod_status_completed">Окончен</label>
+                        <br>
+
+                        <input type="radio" id="mod_status_development" name="mod_status" value="в разработке">
+                        <label for="mod_status_development">В разработке</label>
+                        <br>
+
+                        <input type="radio" id="mod_status_addon" name="mod_status" value="надстройка">
+                        <label for="mod_status_addon">Надстройка</label>
+                        <br>
+
+                        <input type="radio" id="mod_status_tutorial" name="mod_status" value="обучаловка">
+                        <label for="mod_status_tutorial">Обучаловка</label>
+                        <br>
+
+                        <input type="radio" id="mod_status_demo" name="mod_status" value="демо">
+                        <label for="mod_status_demo">Демо</label>
+                        <br>
+
+                        <input type="radio" id="mod_status_frozen" name="mod_status" value="заморожен">
+                        <label for="mod_status_frozen">Заморожен</label>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Languages:</td>
+                    <td>
+                        <input type="checkbox" class="mod_lang" id="mod_lang_ru" name="mod_lang_ru" value="ru">
+                        <label for="mod_lang_ru">Russian</label>
+                        <br>
+
+                        <input type="checkbox" class="mod_lang" id="mod_lang_eng" name="mod_lang_eng" value="eng">
+                        <label for="mod_lang_eng">English</label>
+                        <br>
+
+                        <input type="checkbox" class="mod_lang" id="mod_lang_spa" name="mod_lang_spa" value="spa">
+                        <label for="mod_lang_spa">Spanish</label>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Platforms:</td>
+                    <td>
+                        <input type="checkbox" class="mod_platform" id="mod_platform_android" name="mod_platform_android" value="android">
+                        <label for="mod_platform_android">Android</label>
+                        <br>
+
+                        <input type="checkbox" class="mod_platform" id="mod_platform_ios" name="mod_platform_ios" value="ios">
+                        <label for="mod_platform_ios">iOS</label>
+                    </td>
+                </tr>
+
+                <tr id="mod_android_uri_block">
+                    <td><a target="_blank" id="mod_android_uri">Android description:</a></td>
+                    <td><input type="text" id="mod_android_uri_text" name="mod_android_uri_text" size="90"></td>
+                </tr>
+
+                <tr id="mod_android_files_block">
+                    <td>Android files:</td>
+                    <td><input type="text" id="mod_android_files" name="mod_android_files" size="90"></td>
+                </tr>
+
+                <tr id="mod_ios_uri_block">
+                    <td><a target="_blank" id="mod_ios_uri">iOS description:</a></td>
+                    <td><input type="text" id="mod_ios_uri_text" name="mod_ios_uri_text" size="90"></td>
+                </tr>
+
+                <tr id="mod_ios_files_block">
+                    <td>iOS files:</td>
+                    <td><input type="text" id="mod_ios_files" name="mod_ios_files" size="90"></td>
+                </tr>
+            </table>
+            <span>
+                <button type="button" id="mod_card_save_button" disabled>Save</button>
+                <button type="button" id="mod_card_undo_button" disabled>Undo</button>
+            </span>
+        </span>
+        <div style="display: flex; justify-content: flex-end; column-gap: 10px; margin-right: 25px;">
+            <button type="button" id="index_save_button" disabled>Commit index to server</button>
+            <button type="button" id="index_undo_button" disabled>Revert all changes</button>
+        </div>
+    </body>
+
+</html>
