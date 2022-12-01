@@ -5,13 +5,13 @@
         <meta http-equiv="Content-type" content="text/html; charset=utf-8">
         <title>ES Mod Installer</title>
         <style>
-            ul {height:70vh; width:50vw;}
+            ul {height:67vh; width:50vw;}
             ul {overflow:hidden; overflow-y:scroll;}
             li {cursor: pointer;}
-            tr {background-color: #96D4D4;}
             #app_readme {height:10vh; width:95vw;}
+            .tableblue tr {background-color: #96D4D4;}
             .selected {background: #0f0;}
-            .flexrow {display: inline-grid; vertical-align: top; margin: 25px;}
+            .flexrow {display: flex; padding: 25px; gap: 25px;}
         </style>
         <script type="text/javascript" src="index.js"></script>
     </head>
@@ -23,104 +23,166 @@
             <button type="button" id="app_readme_undo_button" disabled>Undo</button>
         </div>
         <span class="flexrow">
-            <ul id="mods_list"></ul>
-            <span>
-                <button type="button" id="add_list_entry_button" disabled>Add</button>
-                <button type="button" id="delete_list_entry_button" disabled>Delete</button>
-            </span>
-        </span>
-        <span class="flexrow">
-            <table>
-                <tr>
-                    <td>ID:</td>
-                    <td><input type="number" id="mod_id" name="mod_id" min="1" max="999999"></td>
-                </tr>
+            <div id="mods_list_container">
+                <table style="width: 100%;">
+                    <tr>
+                        <td> 
+                            <label for="mod_list_title_filter">Title filter:</label>
+                        </td>
+                        <td>
+                            <input type="text" id="mod_list_title_filter" name="mod_list_title_filter" style="width: 100%;">
+                        </td>
+                    </tr>
 
-                <tr>
-                    <td>Title:</td>
-                    <td><input type="text" id="mod_title" name="mod_title" size="90"></td>
-                </tr>
+                    <tr>
+                        <td>
+                            Status filter:
+                        </td>
+                        <td>
+                            <input type="radio" id="mod_list_status_filter_all" name="mod_list_status_filter" checked>
+                            <label for="mod_list_status_filter_all">Все</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
 
-                <tr>
-                    <td>Status:</td>
-                    <td>
-                        <input type="radio" id="mod_status_completed" name="mod_status" value="окончен">
-                        <label for="mod_status_completed">Окончен</label>
-                        <br>
+                            <input type="radio" id="mod_list_status_filter_completed" name="mod_list_status_filter">
+                            <label for="mod_list_status_filter_completed">Окончен</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
 
-                        <input type="radio" id="mod_status_development" name="mod_status" value="в разработке">
-                        <label for="mod_status_development">В разработке</label>
-                        <br>
+                            <input type="radio" id="mod_list_status_filter_development" name="mod_list_status_filter">
+                            <label for="mod_list_status_filter_development">В разработке</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
 
-                        <input type="radio" id="mod_status_addon" name="mod_status" value="надстройка">
-                        <label for="mod_status_addon">Надстройка</label>
-                        <br>
+                            <input type="radio" id="mod_list_status_filter_addon" name="mod_list_status_filter">
+                            <label for="mod_list_status_filter_addon">Надстройка</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
 
-                        <input type="radio" id="mod_status_tutorial" name="mod_status" value="обучаловка">
-                        <label for="mod_status_tutorial">Обучаловка</label>
-                        <br>
+                            <input type="radio" id="mod_list_status_filter_tutorial" name="mod_list_status_filter">
+                            <label for="mod_list_status_filter_tutorial">Обучаловка</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
 
-                        <input type="radio" id="mod_status_demo" name="mod_status" value="демо">
-                        <label for="mod_status_demo">Демо</label>
-                        <br>
+                            <input type="radio" id="mod_list_status_filter_demo" name="mod_list_status_filter">
+                            <label for="mod_list_status_filter_demo">Демо</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
 
-                        <input type="radio" id="mod_status_frozen" name="mod_status" value="заморожен">
-                        <label for="mod_status_frozen">Заморожен</label>
-                    </td>
-                </tr>
+                            <input type="radio" id="mod_list_status_filter_frozen" name="mod_list_status_filter">
+                            <label for="mod_list_status_filter_frozen">Заморожен</label>
+                        </td>
+                    </tr>
 
-                <tr>
-                    <td>Languages:</td>
-                    <td>
-                        <input type="checkbox" class="mod_lang" id="mod_lang_ru" name="mod_lang_ru" value="ru">
-                        <label for="mod_lang_ru">Russian</label>
-                        <br>
+                    <tr>
+                        <td>Languages filter:</td>
+                        <td>
+                            <input type="checkbox" class="mod_list_lang_filter" id="mod_list_lang_filter_ru" name="mod_list_lang_filter_ru" value="ru" checked>
+                            <label for="mod_list_lang_filter_ru">Russian</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
 
-                        <input type="checkbox" class="mod_lang" id="mod_lang_eng" name="mod_lang_eng" value="eng">
-                        <label for="mod_lang_eng">English</label>
-                        <br>
+                            <input type="checkbox" class="mod_list_lang_filter" id="mod_list_lang_filter_eng" name="mod_list_lang_filter_eng" value="eng" checked>
+                            <label for="mod_list_lang_filter_eng">English</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
 
-                        <input type="checkbox" class="mod_lang" id="mod_lang_spa" name="mod_lang_spa" value="spa">
-                        <label for="mod_lang_spa">Spanish</label>
-                    </td>
-                </tr>
+                            <input type="checkbox" class="mod_list_lang_filter" id="mod_list_lang_filter_spa" name="mod_list_lang_filter_spa" value="spa" checked>
+                            <label for="mod_list_lang_filter_spa">Spanish</label>
+                        </td>
+                    </tr>
+                </table>
+                <ul id="mods_list"></ul>
+                <span>
+                    <button type="button" id="add_list_entry_button" disabled>Add</button>
+                    <button type="button" id="delete_list_entry_button" disabled>Delete</button>
+                </span>
+            </div>
+            <div id="mod_card_container">
+                <table class="tableblue">
+                    <tr>
+                        <td>ID:</td>
+                        <td><input type="number" id="mod_id" name="mod_id" min="1" max="999999"></td>
+                    </tr>
 
-                <tr>
-                    <td>Platforms:</td>
-                    <td>
-                        <input type="checkbox" class="mod_platform" id="mod_platform_android" name="mod_platform_android" value="android">
-                        <label for="mod_platform_android">Android</label>
-                        <br>
+                    <tr>
+                        <td>Title:</td>
+                        <td><input type="text" id="mod_title" name="mod_title" size="90"></td>
+                    </tr>
 
-                        <input type="checkbox" class="mod_platform" id="mod_platform_ios" name="mod_platform_ios" value="ios">
-                        <label for="mod_platform_ios">iOS</label>
-                    </td>
-                </tr>
+                    <tr>
+                        <td>Status:</td>
+                        <td>
+                            <input type="radio" id="mod_status_completed" name="mod_status" value="окончен">
+                            <label for="mod_status_completed">Окончен</label>
+                            <br>
 
-                <tr id="mod_android_uri_block">
-                    <td><a target="_blank" id="mod_android_uri">Android description:</a></td>
-                    <td><input type="text" id="mod_android_uri_text" name="mod_android_uri_text" size="90"></td>
-                </tr>
+                            <input type="radio" id="mod_status_development" name="mod_status" value="в разработке">
+                            <label for="mod_status_development">В разработке</label>
+                            <br>
 
-                <tr id="mod_android_files_block">
-                    <td>Android files:</td>
-                    <td><input type="text" id="mod_android_files" name="mod_android_files" size="90"></td>
-                </tr>
+                            <input type="radio" id="mod_status_addon" name="mod_status" value="надстройка">
+                            <label for="mod_status_addon">Надстройка</label>
+                            <br>
 
-                <tr id="mod_ios_uri_block">
-                    <td><a target="_blank" id="mod_ios_uri">iOS description:</a></td>
-                    <td><input type="text" id="mod_ios_uri_text" name="mod_ios_uri_text" size="90"></td>
-                </tr>
+                            <input type="radio" id="mod_status_tutorial" name="mod_status" value="обучаловка">
+                            <label for="mod_status_tutorial">Обучаловка</label>
+                            <br>
 
-                <tr id="mod_ios_files_block">
-                    <td>iOS files:</td>
-                    <td><input type="text" id="mod_ios_files" name="mod_ios_files" size="90"></td>
-                </tr>
-            </table>
-            <span>
-                <button type="button" id="mod_card_save_button" disabled>Save</button>
-                <button type="button" id="mod_card_undo_button" disabled>Undo</button>
-            </span>
+                            <input type="radio" id="mod_status_demo" name="mod_status" value="демо">
+                            <label for="mod_status_demo">Демо</label>
+                            <br>
+
+                            <input type="radio" id="mod_status_frozen" name="mod_status" value="заморожен">
+                            <label for="mod_status_frozen">Заморожен</label>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>Languages:</td>
+                        <td>
+                            <input type="checkbox" class="mod_lang" id="mod_lang_ru" name="mod_lang_ru" value="ru">
+                            <label for="mod_lang_ru">Russian</label>
+                            <br>
+
+                            <input type="checkbox" class="mod_lang" id="mod_lang_eng" name="mod_lang_eng" value="eng">
+                            <label for="mod_lang_eng">English</label>
+                            <br>
+
+                            <input type="checkbox" class="mod_lang" id="mod_lang_spa" name="mod_lang_spa" value="spa">
+                            <label for="mod_lang_spa">Spanish</label>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>Platforms:</td>
+                        <td>
+                            <input type="checkbox" class="mod_platform" id="mod_platform_android" name="mod_platform_android" value="android">
+                            <label for="mod_platform_android">Android</label>
+                            <br>
+
+                            <input type="checkbox" class="mod_platform" id="mod_platform_ios" name="mod_platform_ios" value="ios">
+                            <label for="mod_platform_ios">iOS</label>
+                        </td>
+                    </tr>
+
+                    <tr id="mod_android_uri_block">
+                        <td><a target="_blank" id="mod_android_uri">Android description:</a></td>
+                        <td><input type="text" id="mod_android_uri_text" name="mod_android_uri_text" size="90"></td>
+                    </tr>
+
+                    <tr id="mod_android_files_block">
+                        <td>Android files:</td>
+                        <td><input type="text" id="mod_android_files" name="mod_android_files" size="90"></td>
+                    </tr>
+
+                    <tr id="mod_ios_uri_block">
+                        <td><a target="_blank" id="mod_ios_uri">iOS description:</a></td>
+                        <td><input type="text" id="mod_ios_uri_text" name="mod_ios_uri_text" size="90"></td>
+                    </tr>
+
+                    <tr id="mod_ios_files_block">
+                        <td>iOS files:</td>
+                        <td><input type="text" id="mod_ios_files" name="mod_ios_files" size="90"></td>
+                    </tr>
+                </table>
+                <span>
+                    <button type="button" id="mod_card_save_button" disabled>Save</button>
+                    <button type="button" id="mod_card_undo_button" disabled>Undo</button>
+                </span>
+            </div>
         </span>
         <div style="display: flex; justify-content: flex-end; column-gap: 10px; margin-right: 25px;">
             <button type="button" id="index_save_button" disabled>Commit index to server</button>

@@ -1,18 +1,37 @@
-var GlobalIndex = undefined;
-var GlobalIndexBackup = undefined;
+let GlobalIndex = undefined;
+let GlobalIndexBackup = undefined;
 
-var GlobalStatuses = {
+const GlobalStatuses = Object.freeze({
     "окончен": "completed",
     "в разработке": "development",
     "надстройка": "addon",
     "обучаловка": "tutorial",
     "демо": "demo",
     "заморожен": "frozen"
-};
+});
+
+function DisableAllRecursivelyById(element_id, is_disabled = true)
+{
+    DisableAllRecursively(document.getElementById(element_id), is_disabled);
+}
+
+function DisableAllRecursively(element, is_disabled = true)
+{
+    for (let child of element.children)
+        DisableAllRecursively(child, is_disabled);
+
+    element.disabled = is_disabled
+    element.style.color = is_disabled ? 'grey' : '';
+}
 
 function UpdateListEntryWithMod(li, mod)
 {
-    li.innerHTML = mod.idmod + " " + mod.title.bold() + " [" + mod.status + "] {" + mod.platforms.join(", ").italics() + "} &lt;" + mod.lang + "&gt;";
+    let regex = document.getElementById("mod_list_title_filter").regex;
+    let colored_title = mod.title;
+    if (regex)
+        colored_title = mod.title.replaceAll(regex, s => s.fontcolor("fuchsia"));
+
+    li.innerHTML = mod.idmod + " " + colored_title.bold() + " [" + mod.status + "] {" + mod.platforms.join(", ").italics() + "} &lt;" + mod.lang + "&gt;";
     li.modObject = mod;
 }
 
@@ -24,6 +43,49 @@ function AddModAsListEntry(mod)
     ul.prepend(li);
 
     return li;
+}
+
+function FilterListModTitle(mod)
+{
+    let regex = document.getElementById("mod_list_title_filter").regex;
+    if (!regex)
+        return true;
+
+    return regex.test(mod.title);
+}
+
+function FilterListModStatus(mod)
+{
+    if (document.getElementById("mod_list_status_filter_all").checked)
+        return true;
+
+    let norm_status = mod.status.trim().toLowerCase();
+    if (!norm_status in GlobalStatuses)
+        return false;
+
+    return document.getElementById("mod_list_status_filter_" + GlobalStatuses[norm_status]).checked;
+}
+
+function FilterListModLang(mod)
+{
+    let mod_lang_arr = mod.lang.replace(/\s/g, "").split(",");
+    for (let mod_lang of mod_lang_arr)
+    {
+        let mod_lang_checkbox = document.getElementById("mod_list_lang_filter_" + mod_lang.toLowerCase());
+        if (mod_lang_checkbox && mod_lang_checkbox.checked)
+            return true;
+    }
+
+    return false;
+}
+
+function FilterListMod(mod)
+{
+    let ret = true;
+    ret &&= FilterListModTitle(mod);
+    ret &&= FilterListModStatus(mod);
+    ret &&= FilterListModLang(mod);
+    return ret;
 }
 
 function IndexDownloaded(indexObject)
@@ -38,28 +100,11 @@ function IndexDownloaded(indexObject)
     let ul = document.getElementById("mods_list");
     ul.innerHTML = "";
 
-    for (let mod of indexObject.packs)
+    for (let mod of indexObject.packs.filter(m => FilterListMod(m)))
         AddModAsListEntry(mod);
 
     ClearModCard();
-    DisableList(false);
-}
-
-function RequestIndex(url)
-{
-    let xh = new XMLHttpRequest();
-    xh.onreadystatechange = function() {
-        if (xh.readyState != 4)
-            return;
-
-        if (xh.status != 200)
-            alert("GET error: " + xh.responseText + " (" + xh.status +")");
-        else
-            IndexDownloaded(JSON.parse(xh.responseText));
-    };
-
-    xh.open("GET", url);
-    xh.send();
+    DisableAllRecursivelyById("mods_list_container", false);
 }
 
 function ListClicked(event)
@@ -86,17 +131,6 @@ function SelectListEntry(entry)
 
     ClearModCard();
     FillModCard(entry.modObject);
-}
-
-function DisableList(disable_flag)
-{
-    document.getElementById("add_list_entry_button").disabled = disable_flag;
-    document.getElementById("delete_list_entry_button").disabled = disable_flag;
-
-    let ul = document.getElementById("mods_list");
-    ul.disabled = disable_flag;
-    for (let li of ul.getElementsByTagName("li"))
-        li.style.color = disable_flag ? 'grey' : 'black';
 }
 
 function TogglePlatformBlocksVisibility(platform, visible)
@@ -128,12 +162,15 @@ function ClearModCard()
         document.getElementById("mod_" + platform + "_files").value = "";
     }
 
-    document.getElementById("mod_card_save_button").disabled = true;
-    document.getElementById("mod_card_undo_button").disabled = true;
+    DisableAllRecursivelyById("mod_card_container");
 }
 
 function FillModCard(mod)
 {
+    DisableAllRecursivelyById("mod_card_container", false);
+    document.getElementById("mod_card_save_button").disabled = true;
+    document.getElementById("mod_card_undo_button").disabled = true;
+
     document.getElementById("mod_id").value = mod.idmod;
     document.getElementById("mod_title").value = mod.title;
 
@@ -264,7 +301,7 @@ function UpdateModCardButtonsState()
     document.getElementById("mod_card_save_button").disabled = unchanged;
     document.getElementById("mod_card_undo_button").disabled = unchanged;
 
-    DisableList(!unchanged);
+    DisableAllRecursivelyById("mods_list_container", !unchanged);
 }
 
 function SaveModCard()
@@ -306,7 +343,7 @@ function SaveModCard()
     document.getElementById("mod_card_save_button").disabled = true;
     document.getElementById("mod_card_undo_button").disabled = true;
 
-    DisableList(false);
+    DisableAllRecursivelyById("mods_list_container", false);
 }
 
 function UpdateIndexButtonsState()
@@ -394,7 +431,7 @@ function BodyMain()
         if (selected)
             FillModCard(selected.modObject);
 
-        DisableList(false);
+        DisableAllRecursivelyById("mods_list_container", false);
     };
 
     document.getElementById("index_save_button").onclick = function() {
@@ -409,5 +446,35 @@ function BodyMain()
         IndexDownloaded(GlobalIndexBackup);
     };
 
-    RequestIndex("project2.json");
+    document.getElementById("mod_list_title_filter").oninput = function() {
+        if (/^\s*$/.test(this.value))
+            this.regex = undefined;
+        else
+            try
+            {
+                this.regex = new RegExp(this.value, "gi");
+            }
+            catch(e)
+            {
+                this.regex = undefined;
+            }
+
+        ClearModCard();
+        IndexDownloaded(GlobalIndex);
+    }
+
+    for (let mod_list_status_filter_radio of document.getElementsByName("mod_list_status_filter"))
+        mod_list_status_filter_radio.onchange = function() {
+            ClearModCard();
+            IndexDownloaded(GlobalIndex);
+        }
+
+    for (let mod_lang_checkbox of document.getElementsByClassName("mod_list_lang_filter"))
+        mod_lang_checkbox.onchange = function() {
+            ClearModCard();
+            IndexDownloaded(GlobalIndex);
+        }
+
+    ClearModCard();
+    fetch("project2.json").then(response => response.json()).then(data => IndexDownloaded(data)).catch(error => alert("GET error: " + error));
 }
