@@ -60,7 +60,7 @@ function FilterListModStatus(mod)
         return true;
 
     let norm_status = mod.status.trim().toLowerCase();
-    if (!norm_status in GlobalStatuses)
+    if (!(norm_status in GlobalStatuses))
         return false;
 
     return document.getElementById("mod_list_status_filter_" + GlobalStatuses[norm_status]).checked;
@@ -68,7 +68,10 @@ function FilterListModStatus(mod)
 
 function FilterListModLang(mod)
 {
-    let mod_lang_arr = mod.lang.replace(/\s/g, "").split(",");
+    if (document.getElementById("mod_list_lang_filter_all").checked)
+        return true;
+
+    let mod_lang_arr = mod.lang.replace(/\s/g, "").split(",").filter(Boolean);
     for (let mod_lang of mod_lang_arr)
     {
         let mod_lang_checkbox = document.getElementById("mod_list_lang_filter_" + mod_lang.toLowerCase());
@@ -181,7 +184,7 @@ function FillModCard(mod)
         TogglePlatformBlocksVisibility(platform, true);
     }
 
-    let mod_lang_arr = mod.lang.replace(/\s/g, "").split(",");
+    let mod_lang_arr = mod.lang.replace(/\s/g, "").split(",").filter(Boolean);
     for (let mod_lang of mod_lang_arr)
     {
         let mod_lang_checkbox = document.getElementById("mod_lang_" + mod_lang.toLowerCase());
@@ -272,7 +275,7 @@ function UpdateModCardButtonsState()
     let norm_status = mod.status.trim().toLowerCase();
     unchanged &&= (norm_status in GlobalStatuses && document.getElementById("mod_status_" + GlobalStatuses[norm_status]).checked);
 
-    let mod_lang_arr = mod.lang.replace(/\s/g, "").split(",");
+    let mod_lang_arr = mod.lang.replace(/\s/g, "").split(",").filter(Boolean);
     for (let mod_lang_checkbox of document.getElementsByClassName("mod_lang"))
         if (mod_lang_checkbox.checked)
             unchanged &&= IncludesCaseInsensitive(mod_lang_arr, mod_lang_checkbox.value);
@@ -330,7 +333,7 @@ function SaveModCard()
         if (IncludesCaseInsensitive(mod.platforms, platform))
         {
             mod["infouri_" + platform] = document.getElementById("mod_" + platform + "_uri_text").value;
-            mod["files_" + platform] = document.getElementById("mod_" + platform + "_files").value.replace(/\s*,\s*/g, ",").split(",");
+            mod["files_" + platform] = document.getElementById("mod_" + platform + "_files").value.replace(/\s*,\s*/g, ",").split(",").filter(Boolean);
         }
         else
         {
