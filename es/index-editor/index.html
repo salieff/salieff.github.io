@@ -15,6 +15,7 @@
         </style>
         <script type="text/javascript" src="globals.js"></script>
         <script type="text/javascript" src="helpers.js"></script>
+        <script type="text/javascript" src="autoindex.js"></script>
         <script type="text/javascript" src="modcard.js"></script>
         <script type="text/javascript" src="modslist.js"></script>
         <script type="text/javascript" src="appreadme.js"></script>
@@ -112,7 +113,7 @@
                     </tr>
 
                     <tr>
-                        <td>Status:</td>
+                        <td style="vertical-align:top">Status:</td>
                         <td>
                             <input type="radio" id="mod_status_completed" name="mod_status" value="окончен">
                             <label for="mod_status_completed">Окончен</label>
@@ -140,7 +141,7 @@
                     </tr>
 
                     <tr>
-                        <td>Languages:</td>
+                        <td style="vertical-align:top">Languages:</td>
                         <td>
                             <input type="checkbox" class="mod_lang" id="mod_lang_ru" name="mod_lang_ru" value="ru">
                             <label for="mod_lang_ru">Russian</label>
@@ -156,7 +157,7 @@
                     </tr>
 
                     <tr>
-                        <td>Platforms:</td>
+                        <td style="vertical-align:top">Platforms:</td>
                         <td>
                             <input type="checkbox" class="mod_platform" id="mod_platform_android" name="mod_platform_android" value="android">
                             <label for="mod_platform_android">Android</label>
@@ -185,6 +186,16 @@
                     <tr id="mod_ios_files_block">
                         <td>iOS files:</td>
                         <td><input type="text" id="mod_ios_files" name="mod_ios_files" size="90"></td>
+                    </tr>
+
+                    <tr>
+                        <td style="vertical-align:top">
+                            Files:
+                            <button type="button" id="mod_files_add_button">+</button>
+                        </td>
+                        <td id=mod_files_block>
+                            <select id="mod_files"></select>
+                        </td>
                     </tr>
                 </table>
                 <span>

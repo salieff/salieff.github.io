@@ -207,4 +207,35 @@ function InitializeModCard()
 
         DisableAllRecursivelyById("mods_list_container", false);
     };
+
+    LoadAutoIndex("../android/", function(arr) {
+        let mod_files = document.getElementById("mod_files");
+        for (let el of arr.map(el => el.replace(new RegExp("^../android/"), "")))
+        {
+            let opt = document.createElement("option");
+            opt.text = el;
+            opt.value = el;
+            mod_files.append(opt);
+        }
+    });
+
+    document.getElementById("mod_files_add_button").onclick = function() {
+        let mod_files = document.getElementById("mod_files");
+        let br = document.createElement("br");
+        let sel = document.createElement("select");
+        sel.innerHTML = mod_files.innerHTML;
+        let but = document.createElement("button");
+        but.type = "button";
+        but.innerText = "X";
+        but.onclick = function() {
+            this.previousSibling.previousSibling.remove();
+            this.previousSibling.remove();
+            this.remove();
+        }
+
+        let mod_files_block = document.getElementById("mod_files_block");
+        mod_files_block.append(br);
+        mod_files_block.append(sel);
+        mod_files_block.append(but);
+    }
 }

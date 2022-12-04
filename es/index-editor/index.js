@@ -47,5 +47,5 @@ function BodyMain()
     InitializeIndex();
 
     ClearModCard();
-    fetch("project2.json").then(response => response.json()).then(data => IndexDownloaded(data)).catch(error => alert("GET error: " + error));
+    fetch("../project2.json").then(response => response.json()).then(data => IndexDownloaded(data)).catch(error => alert("GET error: " + error));
 }
