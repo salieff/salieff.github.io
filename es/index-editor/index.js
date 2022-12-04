@@ -1,5 +1,11 @@
 function IndexDownloaded(indexObject)
 {
+    indexObject.packs.forEach(function(item) {
+        item.platforms = ['android'];
+        delete item.infouri_ios;
+        delete item.files_ios;
+    });
+
     GlobalIndex = indexObject;
     GlobalIndexBackup = JSON.parse(JSON.stringify(indexObject));
 

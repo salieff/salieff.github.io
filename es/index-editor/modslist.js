@@ -5,7 +5,7 @@ function UpdateListEntryWithMod(li, mod)
     if (regex)
         colored_title = mod.title.replaceAll(regex, s => s.fontcolor("fuchsia"));
 
-    li.innerHTML = mod.idmod + " " + colored_title.bold() + " [" + mod.status + "] {" + mod.platforms.join(", ").italics() + "} &lt;" + mod.lang + "&gt;";
+    li.innerHTML = mod.idmod + " " + colored_title.bold() + " [" + mod.status + "] &lt;" + mod.lang + "&gt;";
     li.modObject = mod;
 }
 

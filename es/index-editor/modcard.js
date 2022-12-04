@@ -1,16 +1,7 @@
-function TogglePlatformBlocksVisibility(platform, visible)
-{
-    document.getElementById("mod_" + platform + "_uri_block").style.display = visible ? "" : "none";
-    document.getElementById("mod_" + platform + "_files_block").style.display = visible ? "" : "none";
-}
-
 function ClearModCard()
 {
     document.getElementById("mod_id").value = "";
     document.getElementById("mod_title").value = "";
-
-    for (let mod_platform_checkbox of document.getElementsByClassName("mod_platform"))
-        mod_platform_checkbox.checked = false;
 
     for (let mod_lang_checkbox of document.getElementsByClassName("mod_lang"))
         mod_lang_checkbox.checked = false;
@@ -18,15 +9,8 @@ function ClearModCard()
     for (let mod_status_radio of document.getElementsByName("mod_status"))
         mod_status_radio.checked = false;
 
-    for (let platform of ['android', 'ios'])
-    {
-        TogglePlatformBlocksVisibility(platform, false);
-
-        document.getElementById("mod_" + platform + "_uri").removeAttribute("href");
-        document.getElementById("mod_" + platform + "_uri_text").value = "";
-        document.getElementById("mod_" + platform + "_files").value = "";
-    }
-
+    document.getElementById("mod_uri").removeAttribute("href");
+    document.getElementById("mod_uri_text").value = "";
     document.getElementById("mod_files_block").innerHTML = "";
 
     DisableAllRecursivelyById("mod_card_container");
@@ -41,13 +25,6 @@ function FillModCard(mod)
     document.getElementById("mod_id").value = mod.idmod;
     document.getElementById("mod_title").value = mod.title;
 
-    for (let mod_platform of mod.platforms)
-    {
-        let platform = mod_platform.trim().toLowerCase();
-        document.getElementById("mod_platform_" + platform).checked = true;
-        TogglePlatformBlocksVisibility(platform, true);
-    }
-
     let mod_lang_arr = mod.lang.replace(/\s/g, "").split(",").filter(Boolean);
     for (let mod_lang of mod_lang_arr)
     {
@@ -60,20 +37,15 @@ function FillModCard(mod)
     if (norm_status in GlobalStatuses)
         document.getElementById("mod_status_" + GlobalStatuses[norm_status]).checked = true;
 
-    for (let platform of ['android', 'ios'])
+    if (mod.hasOwnProperty("infouri_android"))
     {
-        if (mod.hasOwnProperty("infouri_" + platform))
-        {
-            document.getElementById("mod_" + platform + "_uri").href = mod["infouri_" + platform];
-            document.getElementById("mod_" + platform + "_uri_text").value = mod["infouri_" + platform];
-        }
-
-        if (mod.hasOwnProperty("files_" + platform))
-            document.getElementById("mod_" + platform + "_files").value = mod["files_" + platform].join(", ");
+        document.getElementById("mod_uri").href = mod.infouri_android;
+        document.getElementById("mod_uri_text").value = mod.infouri_android;
     }
 
-    for (let file_el of mod["files_android"].map(el => el.replace(new RegExp("^android/"), "")))
-        AddModCardFileSelect(file_el);
+    if (mod.hasOwnProperty("files_android"))
+        for (let file_el of mod.files_android.map(el => el.replace(new RegExp("^android/"), "")))
+            AddModCardFileSelect(file_el);
 }
 
 function UpdateModCardButtonsState()
@@ -99,24 +71,16 @@ function UpdateModCardButtonsState()
         else
             unchanged &&= !IncludesCaseInsensitive(mod_lang_arr, mod_lang_checkbox.value);
 
-    for (let mod_platform_checkbox of document.getElementsByClassName("mod_platform"))
-        if (mod_platform_checkbox.checked)
-            unchanged &&= IncludesCaseInsensitive(mod.platforms, mod_platform_checkbox.value);
-        else
-            unchanged &&= !IncludesCaseInsensitive(mod.platforms, mod_platform_checkbox.value);
+    if (mod.hasOwnProperty("infouri_android"))
+        unchanged &&= document.getElementById("mod_uri_text").value == mod.infouri_android;
+    else
+        unchanged &&= !document.getElementById("mod_uri_text").value;
 
-    for (let platform of ['android', 'ios'])
-    {
-        if (mod.hasOwnProperty("infouri_" + platform))
-            unchanged &&= (document.getElementById("mod_" + platform + "_uri_text").value == mod["infouri_" + platform]);
-        else
-            unchanged &&= !document.getElementById("mod_" + platform + "_uri_text").value;
-
-        if (mod.hasOwnProperty("files_" + platform))
-            unchanged &&= (document.getElementById("mod_" + platform + "_files").value.replace(/\s*,\s*/g, ",") == mod["files_" + platform].join(","));
-        else
-            unchanged &&= !document.getElementById("mod_" + platform + "_files").value;
-    }
+    let html_files = Array.from(document.getElementById("mod_files_block").getElementsByTagName("select")).map(el => "android/" + el.value);
+    if (mod.hasOwnProperty("files_android"))
+        unchanged &&= JSON.stringify(html_files.slice().sort()) == JSON.stringify(mod.files_android.slice().sort());
+    else
+        unchanged &&= !html_files;
 
     document.getElementById("mod_card_save_button").disabled = unchanged;
     document.getElementById("mod_card_undo_button").disabled = unchanged;
@@ -144,19 +108,10 @@ function SaveModCard()
         }
 
     mod.lang = Array.from(document.getElementsByClassName("mod_lang")).filter(chk => chk.checked).map(chk => CapitalizeFirstLetter(chk.value)).join();
-    mod.platforms = Array.from(document.getElementsByClassName("mod_platform")).filter(chk => chk.checked).map(chk => chk.value.toLowerCase());
+    mod.platforms = ['android'];
 
-    for (let platform of ['android', 'ios'])
-        if (IncludesCaseInsensitive(mod.platforms, platform))
-        {
-            mod["infouri_" + platform] = document.getElementById("mod_" + platform + "_uri_text").value;
-            mod["files_" + platform] = document.getElementById("mod_" + platform + "_files").value.replace(/\s*,\s*/g, ",").split(",").filter(Boolean);
-        }
-        else
-        {
-            delete mod["infouri_" + platform];
-            delete mod["files_" + platform];
-        }
+    mod.infouri_android = document.getElementById("mod_uri_text").value;
+    mod.files_android = Array.from(document.getElementById("mod_files_block").getElementsByTagName("select")).map(el => "android/" + el.value).slice().sort();
 
     UpdateListEntryWithMod(selected, mod);
 
@@ -171,6 +126,7 @@ function AddModCardFileSelect(file_name = null) {
 
     let br = document.createElement("br");
     let sel = mod_files_block.select_file_template.cloneNode(true);
+    sel.onchange = UpdateModCardButtonsState;
     if (file_name)
         sel.value = file_name;
 
@@ -181,6 +137,7 @@ function AddModCardFileSelect(file_name = null) {
         this.previousSibling.remove();
         this.nextSibling.remove();
         this.remove();
+        UpdateModCardButtonsState();
     }
 
     mod_files_block.append(sel);
@@ -199,25 +156,14 @@ function InitializeModCard()
     for (let mod_lang_checkbox of document.getElementsByClassName("mod_lang"))
         mod_lang_checkbox.onchange = UpdateModCardButtonsState;
 
-    for (let mod_platform_checkbox of document.getElementsByClassName("mod_platform"))
-        mod_platform_checkbox.onchange = function() {
-            TogglePlatformBlocksVisibility(this.value, this.checked);
-            UpdateModCardButtonsState();
-        };
+    document.getElementById("mod_uri_text").oninput = function() {
+        if (/^\s*$/.test(this.value))
+            document.getElementById("mod_uri").removeAttribute("href");
+        else
+            document.getElementById("mod_uri").href = this.value;
 
-    for (let platform of ['android', 'ios'])
-    {
-        document.getElementById("mod_" + platform + "_uri_text").oninput = function() {
-            if (/^\s*$/.test(this.value))
-                document.getElementById("mod_" + platform + "_uri").removeAttribute("href");
-            else
-                document.getElementById("mod_" + platform + "_uri").href = this.value;
-
-            UpdateModCardButtonsState();
-        };
-
-        document.getElementById("mod_" + platform + "_files").oninput = UpdateModCardButtonsState;
-    }
+        UpdateModCardButtonsState();
+    };
 
     document.getElementById("mod_card_save_button").onclick = function() {
         SaveModCard();
@@ -251,8 +197,8 @@ function InitializeModCard()
         let btn = document.createElement("button");
         btn.type = "button";
         btn.innerText = "+";
-        btn.onclick = function() { AddModCardFileSelect(); };
-        btn.disable = document.getElementById("mod_card_container").disable;
+        btn.onclick = function() { AddModCardFileSelect(); UpdateModCardButtonsState(); };
+        btn.disabled = document.getElementById("mod_card_container").disabled;
 
         document.getElementById("mod_files_label").append(btn);
     });
