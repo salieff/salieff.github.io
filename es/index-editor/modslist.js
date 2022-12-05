@@ -7,6 +7,7 @@ function UpdateListEntryWithMod(li, mod)
 
     li.innerHTML = mod.idmod + " " + colored_title.bold() + " [" + mod.status + "] &lt;" + mod.lang + "&gt;";
     li.modObject = mod;
+    li.modErrors = [];
 }
 
 function AddModAsListEntry(mod)
@@ -88,7 +89,7 @@ function SelectListEntry(entry)
     entry.classList.add('selected');
 
     ClearModCard();
-    FillModCard(entry.modObject);
+    FillModCard(entry.modObject, entry.modErrors);
 }
 
 function AddListEntry()
@@ -131,6 +132,37 @@ function DeleteListEntry()
         ClearModCard();
 }
 
+function CheckListErrors()
+{
+    let ul = document.getElementById("mods_list");
+    let broken_chk = document.getElementById("mod_list_broken_filter");
+    let broken_count = 0;
+
+    for (let li of ul.getElementsByTagName("li"))
+    {
+        li.modErrors = CheckModErrors(li.modObject);
+        if (li.modErrors.length)
+        {
+            li.style.color = "red";
+            broken_count++;
+            continue;
+        }
+
+        li.style.color = "";
+        li.style.display = broken_chk.checked ? "none" : "";
+    }
+
+    document.getElementById("mod_list_broken_filter_label").innerHTML = "Only broken (" + broken_count + ")";
+
+    ClearModCard();
+
+    let selected = ul.querySelector('.selected');
+    if (!selected || selected.style.display == "none")
+        return;
+
+    FillModCard(selected.modObject, selected.modErrors);
+}
+
 function InitializeModsList()
 {
     let ul = document.getElementById("mods_list");
@@ -141,11 +173,13 @@ function InitializeModsList()
     document.getElementById("add_list_entry_button").onclick = function() {
         AddListEntry();
         UpdateIndexButtonsState();
+        CheckListErrors();
     }
 
     document.getElementById("delete_list_entry_button").onclick = function() {
         DeleteListEntry();
         UpdateIndexButtonsState();
+        CheckListErrors();
     }
 
     document.getElementById("mod_list_title_filter").oninput = function() {
@@ -162,18 +196,23 @@ function InitializeModsList()
             }
 
         ClearModCard();
-        IndexDownloaded(GlobalIndex);
+        IndexFill(GlobalIndex);
     }
 
     for (let mod_list_status_filter_radio of document.getElementsByName("mod_list_status_filter"))
         mod_list_status_filter_radio.onchange = function() {
             ClearModCard();
-            IndexDownloaded(GlobalIndex);
+            IndexFill(GlobalIndex);
         }
 
     for (let mod_lang_checkbox of document.getElementsByClassName("mod_list_lang_filter"))
         mod_lang_checkbox.onchange = function() {
             ClearModCard();
-            IndexDownloaded(GlobalIndex);
+            IndexFill(GlobalIndex);
         }
+
+    document.getElementById("mod_list_broken_filter").onchange = function() {
+        ClearModCard();
+        IndexFill(GlobalIndex);
+    }
 }

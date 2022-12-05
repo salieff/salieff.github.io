@@ -5,16 +5,18 @@
         <meta http-equiv="Content-type" content="text/html; charset=utf-8">
         <title>ES Mod Installer</title>
         <style>
-            ul {height:63vh; width:50vw;}
+            ul {height:60vh; width:50vw;}
             ul {overflow:hidden; overflow-y:scroll;}
             li {cursor: pointer;}
             #app_readme {height:10vh; width:95vw;}
+            #mod_errors {width:99%; color: red}
             .tableblue tr {background-color: #96D4D4;}
             .selected {background: #0f0;}
             .flexrow {display: flex; padding: 25px; gap: 25px;}
         </style>
         <script type="text/javascript" src="globals.js"></script>
         <script type="text/javascript" src="helpers.js"></script>
+        <script type="text/javascript" src="checkerrors.js"></script>
         <script type="text/javascript" src="autoindex.js"></script>
         <script type="text/javascript" src="modcard.js"></script>
         <script type="text/javascript" src="modslist.js"></script>
@@ -93,6 +95,10 @@
                             <label for="mod_list_lang_filter_spa">Spanish</label>
                         </td>
                     </tr>
+                    <tr>
+                        <td id="mod_list_broken_filter_label">Only broken:</td>
+                        <td><input type="checkbox" id="mod_list_broken_filter"></td>
+                    </tr>
                 </table>
                 <ul id="mods_list"></ul>
                 <span>
@@ -164,6 +170,11 @@
                     <tr>
                         <td id="mod_files_label" style="vertical-align:top">Files:</td>
                         <td id="mod_files_block"></td>
+                    </tr>
+
+                    <tr id="mod_errors_block">
+                        <td style="vertical-align:top">Errors:</td>
+                        <td><textarea id="mod_errors" readonly></textarea></td>
                     </tr>
                 </table>
                 <span>

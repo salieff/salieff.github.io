@@ -13,10 +13,13 @@ function ClearModCard()
     document.getElementById("mod_uri_text").value = "";
     document.getElementById("mod_files_block").innerHTML = "";
 
+    document.getElementById("mod_errors").value = "";
+    document.getElementById("mod_errors_block").style.display = "none";
+
     DisableAllRecursivelyById("mod_card_container");
 }
 
-function FillModCard(mod)
+function FillModCard(mod, mod_errors)
 {
     DisableAllRecursivelyById("mod_card_container", false);
     document.getElementById("mod_card_save_button").disabled = true;
@@ -46,6 +49,20 @@ function FillModCard(mod)
     if (mod.hasOwnProperty("files_android"))
         for (let file_el of mod.files_android.map(el => el.replace(new RegExp("^android/"), "")))
             AddModCardFileSelect(file_el);
+
+    if (mod_errors.length > 0)
+    {
+        document.getElementById("mod_errors_block").style.display = "";
+
+        let mod_err_el = document.getElementById("mod_errors");
+        mod_err_el.value = mod_errors.join("\n");
+        mod_err_el.style.height = "auto";
+        mod_err_el.style.height = mod_err_el.scrollHeight + "px";
+    }
+    else
+    {
+        document.getElementById("mod_errors_block").style.display = "none";
+    }
 }
 
 function UpdateModCardButtonsState()
@@ -80,7 +97,8 @@ function UpdateModCardButtonsState()
     if (mod.hasOwnProperty("files_android"))
         unchanged &&= JSON.stringify(html_files.slice().sort()) == JSON.stringify(mod.files_android.slice().sort());
     else
-        unchanged &&= !html_files;
+        unchanged &&= html_files.length == 0;
+
 
     document.getElementById("mod_card_save_button").disabled = unchanged;
     document.getElementById("mod_card_undo_button").disabled = unchanged;
@@ -168,6 +186,7 @@ function InitializeModCard()
     document.getElementById("mod_card_save_button").onclick = function() {
         SaveModCard();
         UpdateIndexButtonsState();
+        CheckListErrors();
     }
 
     document.getElementById("mod_card_undo_button").onclick = function() {
@@ -176,9 +195,10 @@ function InitializeModCard()
         let ul = document.getElementById("mods_list");
         let selected = ul.querySelector('.selected');
         if (selected)
-            FillModCard(selected.modObject);
+            FillModCard(selected.modObject, selected.modErrors);
 
         DisableAllRecursivelyById("mods_list_container", false);
+        CheckListErrors();
     };
 
     LoadAutoIndex("../android/", function(arr) {
