@@ -46,9 +46,23 @@ function UpdateIndexButtonsState()
 function InitializeIndex()
 {
     document.getElementById("index_save_button").onclick = function() {
-        this.disabled = true;
-        document.getElementById("index_undo_button").disabled = true;
-        GlobalIndexBackup = JSON.parse(JSON.stringify(GlobalIndex));
+        fetch("../project2.json", {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(GlobalIndex, null, 4)
+        })
+        .then(response => {
+            if (response.status == 200 || response.status == 201 || response.status == 204)
+            {
+                this.disabled = true;
+                document.getElementById("index_undo_button").disabled = true;
+                GlobalIndexBackup = JSON.parse(JSON.stringify(GlobalIndex));
+                return;
+            }
+
+            throw new Error(response.url + " : " + response.statusText + " (" + response.status + ")");
+        })
+        .catch(error => alert("PUT error: " + error));
     };
 
     document.getElementById("index_undo_button").onclick = function() {
@@ -56,6 +70,22 @@ function InitializeIndex()
         this.disabled = true;
         IndexDownloaded(GlobalIndexBackup);
     };
+
+    document.getElementById("index_save_local_button").onclick = function() {
+        LocalDownload(JSON.stringify(GlobalIndex, null, 4), "project2.json", "application/json");
+    }
+
+    document.getElementById("index_load_local_button").onchange = function() {
+        let reader = new FileReader();
+        reader.onload = function() {
+            GlobalIndex = JSON.parse(reader.result);
+            IndexFill(GlobalIndex);
+            UpdateIndexButtonsState();
+        };
+        reader.readAsText(this.files[0]);
+        this.value = "";
+    }
+
 }
 
 function BodyMain()
@@ -66,5 +96,14 @@ function BodyMain()
     InitializeIndex();
 
     ClearModCard();
-    fetch("../project2.json").then(response => response.json()).then(data => IndexDownloaded(data)).catch(error => alert("GET error: " + error));
+
+    fetch("../project2.json")
+    .then(response => {
+        if (response.ok)
+            return response.json();
+
+        throw new Error(response.url + " : " + response.statusText + " (" + response.status + ")");
+    })
+    .then(data => IndexDownloaded(data))
+    .catch(error => alert("GET error: " + error));
 }

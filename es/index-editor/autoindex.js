@@ -28,5 +28,13 @@ function LoadAutoIndex(url, callback_fn, in_array = null, in_counter_object = nu
     let ret_array = in_array === null ? [] : in_array;
     let counter_object = in_counter_object === null ? {counter: 1} : in_counter_object;
 
-    fetch(url).then(response => response.text()).then(html_str => ParseAutoIndex(url, html_str, callback_fn, ret_array, counter_object)).catch(error => alert("GET error: " + error));
+    fetch(url)
+    .then(response => {
+        if (response.ok)
+            return response.text();
+
+        throw new Error(response.url + " : " + response.statusText + " (" + response.status + ")");
+    })
+    .then(html_str => ParseAutoIndex(url, html_str, callback_fn, ret_array, counter_object))
+    .catch(error => alert("Autoindex GET error: " + error));
 }

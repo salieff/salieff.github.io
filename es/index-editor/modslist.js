@@ -95,7 +95,7 @@ function SelectListEntry(entry)
 function AddListEntry()
 {
     let newMod = {
-        "idmod": Math.max(...GlobalIndex.packs.map(o=>o.idmod)) + 1,
+        "idmod": Math.max(0, ...GlobalIndex.packs.map(o=>o.idmod)) + 1,
         "platforms": [],
         "title": "",
         "lang": "",
@@ -109,16 +109,28 @@ function AddListEntry()
     li.scrollIntoView();
 }
 
+function NearestListSibling(li)
+{
+    let sibling = li;
+    do sibling = sibling.nextElementSibling; while (sibling && sibling.style.display == "none")
+
+    if (!sibling || sibling.style.display == "none")
+    {
+        sibling = li;
+        do sibling = sibling.previousElementSibling; while (sibling && sibling.style.display == "none")
+    }
+
+    return sibling;
+}
+
 function DeleteListEntry()
 {
     let ul = document.getElementById("mods_list");
     let selected = ul.querySelector('.selected');
-    if (!selected)
+    if (!selected || selected.style.display == "none")
         return;
 
-    let sibling = selected.nextElementSibling;
-    if (!sibling)
-        sibling = selected.previousElementSibling;
+    let sibling = NearestListSibling(selected);
 
     let index = GlobalIndex.packs.indexOf(selected.modObject);
     if (index !== -1)
@@ -126,7 +138,7 @@ function DeleteListEntry()
 
     ul.removeChild(selected);
 
-    if (sibling)
+    if (sibling && sibling.style.display != "none")
         SelectListEntry(sibling);
     else
         ClearModCard();
@@ -157,10 +169,14 @@ function CheckListErrors()
     ClearModCard();
 
     let selected = ul.querySelector('.selected');
-    if (!selected || selected.style.display == "none")
+    if (!selected)
         return;
 
-    FillModCard(selected.modObject, selected.modErrors);
+    if (selected.style.display == "none")
+        selected = NearestListSibling(selected);
+
+    if (selected && selected.style.display != "none")
+        SelectListEntry(selected);
 }
 
 function InitializeModsList()

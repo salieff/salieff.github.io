@@ -8,11 +8,14 @@
             ul {height:60vh; width:50vw;}
             ul {overflow:hidden; overflow-y:scroll;}
             li {cursor: pointer;}
+            input[type="file"] {display: none;}
             #app_readme {height:10vh; width:95vw;}
             #mod_errors {width:99%; color: red}
             .tableblue tr {background-color: #96D4D4;}
             .selected {background: #0f0;}
             .flexrow {display: flex; padding: 25px; gap: 25px;}
+            .spacer {flex-grow: 1;}
+            .custom-file-upload {border: 1px solid #767676; border-radius: 2px; background-color: #EFEFEF; display: inline-block; padding: 6px 12px; cursor: pointer;}
         </style>
         <script type="text/javascript" src="globals.js"></script>
         <script type="text/javascript" src="helpers.js"></script>
@@ -25,7 +28,7 @@
     </head>
 
     <body onload="BodyMain()">
-        <textarea id="app_readme" disabled></textarea>
+        <textarea id="app_readme"></textarea>
         <div>
             <button type="button" id="app_readme_save_button" disabled>Save</button>
             <button type="button" id="app_readme_undo_button" disabled>Undo</button>
@@ -102,8 +105,8 @@
                 </table>
                 <ul id="mods_list"></ul>
                 <span>
-                    <button type="button" id="add_list_entry_button" disabled>Add</button>
-                    <button type="button" id="delete_list_entry_button" disabled>Delete</button>
+                    <button type="button" id="add_list_entry_button">Add</button>
+                    <button type="button" id="delete_list_entry_button">Delete</button>
                 </span>
             </div>
             <div id="mod_card_container">
@@ -183,7 +186,13 @@
                 </span>
             </div>
         </span>
-        <div style="display: flex; justify-content: flex-end; column-gap: 10px; margin-right: 25px;">
+        <div style="display: flex; column-gap: 10px; margin-left: 25px; margin-right: 25px;">
+            <label class="custom-file-upload">
+                <input id="index_load_local_button" type="file"/>
+                Load index from local file
+            </label>
+            <button type="button" id="index_save_local_button">Save index as local file</button>
+            <div class="spacer"></div>
             <button type="button" id="index_save_button" disabled>Commit index to server</button>
             <button type="button" id="index_undo_button" disabled>Revert all changes</button>
         </div>
