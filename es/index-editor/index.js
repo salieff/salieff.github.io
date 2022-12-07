@@ -48,7 +48,8 @@ function InitializeIndex()
     document.getElementById("index_save_button").onclick = function() {
         fetch("../project2.json", {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json',
+                       'If': "(" + WebDavLockToken + ")" },
             body: JSON.stringify(GlobalIndex, null, 4)
         })
         .then(response => {
@@ -88,6 +89,43 @@ function InitializeIndex()
 
 }
 
+function LockIndexOrStop()
+{
+    fetch("../project2.json", {method: 'LOCK'})
+    .then(response => {
+        if (response.ok)
+        {
+            WebDavLockToken = response.headers.get("Lock-Token");
+            window.onbeforeunload = UnlockIndex;
+            return;
+        }
+
+        throw new Error(response.url + " : " + response.statusText + " (" + response.status + ")");
+    })
+    .catch(error => {
+        window.stop();
+        document.getElementsByTagName("body")[0].innerHTML = "";
+        alert("Somebody else is editing ES index just now.\nPlease, wait for your turn!\n" + error);
+    });
+}
+
+function UnlockIndex()
+{
+    fetch("../project2.json", {
+        method: 'UNLOCK',
+        headers: { 'Lock-Token': WebDavLockToken }
+    })
+    .then(response => {
+        if (response.status == 200 || response.status == 201 || response.status == 204)
+            return;
+
+        throw new Error(response.url + " : " + response.statusText + " (" + response.status + ")");
+    })
+    .catch(error => {
+        alert("Can't unlock index\nNobody else can edit it\n" + error);
+    });
+}
+
 function BodyMain()
 {
     InitializeAppReadme();
@@ -107,3 +145,5 @@ function BodyMain()
     .then(data => IndexDownloaded(data))
     .catch(error => alert("GET error: " + error));
 }
+
+LockIndexOrStop();
