@@ -9,7 +9,7 @@
             ul {overflow:hidden; overflow-y:scroll;}
             li {cursor: pointer;}
             input[type="file"] {display: none;}
-            #app_readme {height:10vh; width:95vw;}
+            #app_readme {height:10vh; width:100%;}
             #mod_errors {width:99%; color: red}
             .tableblue tr {background-color: #96D4D4;}
             .selected {background: #0f0;}
@@ -29,7 +29,9 @@
 
     <body onload="BodyMain()">
         <textarea id="app_readme"></textarea>
-        <div>
+        <div style="display: flex; column-gap: 10px;">
+            <button type="button" id="app_generate_readme_button">Generate list of added/modified mods</button>
+            <div class="spacer"></div>
             <button type="button" id="app_readme_save_button" disabled>Save</button>
             <button type="button" id="app_readme_undo_button" disabled>Undo</button>
         </div>
