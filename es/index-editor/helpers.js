@@ -29,8 +29,22 @@ function DisableAllRecursively(element, is_disabled = true)
     for (let child of element.children)
         DisableAllRecursively(child, is_disabled);
 
-    element.disabled = is_disabled
-    element.style.color = is_disabled ? 'grey' : '';
+    element.disabled = is_disabled;
+
+    if (is_disabled)
+    {
+        if (element.style.color != 'grey')
+            element.disabled_color = element.style.color;
+
+        element.style.color = 'grey';
+    }
+    else
+    {
+        if (element.disabled_color == undefined || element.disabled_color == null || element.disabled_color == "grey")
+            element.style.color = "";
+        else
+            element.style.color = element.disabled_color;
+    }
 }
 
 function IncludesCaseInsensitive(arr, str)
