@@ -14,7 +14,7 @@ function ClearModCard()
     document.getElementById("mod_files_block").innerHTML = "";
 
     document.getElementById("mod_errors").value = "";
-    document.getElementById("mod_errors_block").style.display = "none";
+    HideElementsByClass("mod_errors_block");
 
     DisableAllRecursivelyById("mod_card_container");
 }
@@ -52,7 +52,7 @@ function FillModCard(mod, mod_errors)
 
     if (mod_errors.length > 0)
     {
-        document.getElementById("mod_errors_block").style.display = "";
+        HideElementsByClass("mod_errors_block", false);
 
         let mod_err_el = document.getElementById("mod_errors");
         mod_err_el.value = mod_errors.join("\n");
@@ -61,7 +61,7 @@ function FillModCard(mod, mod_errors)
     }
     else
     {
-        document.getElementById("mod_errors_block").style.display = "none";
+        HideElementsByClass("mod_errors_block");
     }
 }
 
@@ -142,25 +142,29 @@ function SaveModCard()
 function AddModCardFileSelect(file_name = null) {
     let mod_files_block = document.getElementById("mod_files_block");
 
-    let br = document.createElement("br");
     let sel = mod_files_block.select_file_template.cloneNode(true);
     sel.onchange = UpdateModCardButtonsState;
     if (file_name)
         sel.value = file_name;
 
+    let div = document.createElement("div");
+    div.style.display = "flex";
+    div.style.columnGap = "3px";
+
     let but = document.createElement("button");
     but.type = "button";
     but.innerText = "X";
     but.onclick = function() {
-        this.previousSibling.remove();
-        this.nextSibling.remove();
-        this.remove();
+        sel.remove();
+        but.remove();
+        div.remove();
         UpdateModCardButtonsState();
     }
 
-    mod_files_block.append(sel);
-    mod_files_block.append(but);
-    mod_files_block.append(br);
+    div.append(sel);
+    div.append(but);
+
+    mod_files_block.append(div);
 }
 
 function InitializeModCard()

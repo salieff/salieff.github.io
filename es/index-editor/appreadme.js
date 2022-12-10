@@ -1,7 +1,11 @@
 function GenerateAppReadmeAddedModifiedList()
 {
-    let new_mods = GlobalIndex.packs.filter(m => !GlobalIndexBackup.packs.map(bm => bm.idmod).includes(m.idmod));
-    let modified_mods = GlobalIndex.packs.filter(m => !(GlobalIndexBackup.packs.map(bm => JSON.stringify(bm)).includes(JSON.stringify(m)) || new_mods.map(nm => nm.idmod).includes(m.idmod)));
+    let bkp_idmod_arr = GlobalIndexBackup.packs.map(bm => bm.idmod);
+    let new_mods = GlobalIndex.packs.filter(m => !bkp_idmod_arr.includes(m.idmod));
+
+    let bkp_json_arr = GlobalIndexBackup.packs.map(bm => JSON.stringify(bm));
+    let new_idmod_arr = new_mods.map(nm => nm.idmod);
+    let modified_mods = GlobalIndex.packs.filter(m => !(bkp_json_arr.includes(JSON.stringify(m)) || new_idmod_arr.includes(m.idmod)));
 
     if (new_mods.length == 0 && modified_mods.length == 0)
         return;

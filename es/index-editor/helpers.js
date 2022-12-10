@@ -1,3 +1,24 @@
+function HideElementsByClass(class_name, is_hidden = true)
+{
+    Array.from(document.getElementsByClassName(class_name)).forEach(el => {
+        if (is_hidden)
+        {
+            el.hidden_display = el.style.display;
+            if (el.hidden_display == undefined || el.hidden_display == null || el.hidden_display == "none")
+                el.hidden_display = "";
+
+            el.style.display = "none";
+        }
+        else
+        {
+            if (el.hidden_display == undefined || el.hidden_display == null || el.hidden_display == "none")
+                el.style.display = "";
+            else
+                el.style.display = el.hidden_display;
+        }
+    });
+}
+
 function DisableAllRecursivelyById(element_id, is_disabled = true)
 {
     DisableAllRecursively(document.getElementById(element_id), is_disabled);
