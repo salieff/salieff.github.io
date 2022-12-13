@@ -47,6 +47,7 @@ function InitializeIndex()
 {
     document.getElementById("index_save_button").onclick = function() {
         fetch("../project2.json", {
+            cache: "no-store",
             method: 'PUT',
             headers: { 'Content-Type': 'application/json',
                        'If': "(" + WebDavLockToken + ")" },
@@ -89,23 +90,46 @@ function InitializeIndex()
 
 }
 
-function LockIndexOrStop()
+function FetchIndex()
 {
-    fetch("../project2.json", {method: 'LOCK'})
+    fetch("../project2.json", {cache: "no-store"})
+    .then(response => {
+        if (response.ok)
+            return response.json();
+
+        throw new Error(response.url + " : " + response.statusText + " (" + response.status + ")");
+    })
+    .then(data => IndexDownloaded(data))
+    .catch(error => alert("GET error: " + error));
+}
+
+function LockIndexOrStop(success_function)
+{
+    fetch("../project2.json", {method: 'LOCK', cache: "no-store"})
     .then(response => {
         if (response.ok)
         {
             WebDavLockToken = response.headers.get("Lock-Token");
             window.onbeforeunload = UnlockIndex;
+
+            success_function();
+
             return;
         }
 
-        throw new Error(response.url + " : " + response.statusText + " (" + response.status + ")");
+        throw new Error(response.url + " : " + response.statusText + " (" + response.status + ")", { cause: response.status });
     })
     .catch(error => {
-        window.stop();
-        document.getElementsByTagName("body")[0].innerHTML = "";
-        alert("Somebody else is editing ES index just now.\nPlease, wait for your turn!\n" + error);
+        if (error.cause == 423)
+        {
+            window.stop();
+            document.getElementsByTagName("body")[0].innerHTML = "";
+            alert("Somebody else is editing ES index just now.\nPlease, wait for your turn!");
+        }
+        else
+        {
+            alert("LOCK error: " + error);
+        }
     });
 }
 
@@ -113,6 +137,7 @@ function UnlockIndex()
 {
     fetch("../project2.json", {
         method: 'UNLOCK',
+        cache: "no-store",
         headers: { 'Lock-Token': WebDavLockToken }
     })
     .then(response => {
@@ -135,15 +160,5 @@ function BodyMain()
 
     ClearModCard();
 
-    fetch("../project2.json")
-    .then(response => {
-        if (response.ok)
-            return response.json();
-
-        throw new Error(response.url + " : " + response.statusText + " (" + response.status + ")");
-    })
-    .then(data => IndexDownloaded(data))
-    .catch(error => alert("GET error: " + error));
+    LockIndexOrStop(() => LoadModFilesList(FetchIndex));
 }
-
-LockIndexOrStop();

@@ -28,7 +28,7 @@ function LoadAutoIndex(url, callback_fn, in_array = null, in_counter_object = nu
     let ret_array = in_array === null ? [] : in_array;
     let counter_object = in_counter_object === null ? {counter: 1} : in_counter_object;
 
-    fetch(url)
+    fetch(url, {cache: "no-store"})
     .then(response => {
         if (response.ok)
             return response.text();

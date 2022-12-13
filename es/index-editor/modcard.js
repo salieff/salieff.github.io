@@ -142,8 +142,24 @@ function SaveModCard()
 function AddModCardFileSelect(file_name = null) {
     let mod_files_block = document.getElementById("mod_files_block");
 
-    let sel = mod_files_block.select_file_template.cloneNode(true);
-    sel.onchange = UpdateModCardButtonsState;
+    let sel = undefined;
+    if (mod_files_block.select_file_template)
+    {
+        sel = mod_files_block.select_file_template.cloneNode(true);
+        sel.onchange = UpdateModCardButtonsState;
+    }
+    else
+    {
+        sel = document.createElement("select");
+        if (file_name)
+        {
+            let opt = document.createElement("option");
+            opt.text = file_name;
+            opt.value = file_name;
+            sel.append(opt);
+        }
+    }
+
     if (file_name)
         sel.value = file_name;
 
@@ -165,6 +181,35 @@ function AddModCardFileSelect(file_name = null) {
     div.append(but);
 
     mod_files_block.append(div);
+}
+
+function LoadModFilesList(success_function)
+{
+    LoadAutoIndex("../android/", function(arr) {
+        ModFilesList = arr.map(el => el.replace(new RegExp("^../"), ""));
+
+        let sel = document.createElement("select");
+        for (let el of arr.map(el => el.replace(new RegExp("^../android/"), "")))
+        {
+            let opt = document.createElement("option");
+            opt.text = el;
+            opt.value = el;
+            sel.append(opt);
+        }
+
+        let mod_files_block = document.getElementById("mod_files_block");
+        mod_files_block.select_file_template = sel;
+
+        let btn = document.createElement("button");
+        btn.type = "button";
+        btn.innerText = "+";
+        btn.onclick = function() { AddModCardFileSelect(); UpdateModCardButtonsState(); };
+        btn.disabled = document.getElementById("mod_card_container").disabled;
+
+        document.getElementById("mod_files_label").append(btn);
+
+        success_function();
+    });
 }
 
 function InitializeModCard()
@@ -204,26 +249,4 @@ function InitializeModCard()
         DisableAllRecursivelyById("mods_list_container", false);
         CheckListErrors();
     };
-
-    LoadAutoIndex("../android/", function(arr) {
-        let sel = document.createElement("select");
-        for (let el of arr.map(el => el.replace(new RegExp("^../android/"), "")))
-        {
-            let opt = document.createElement("option");
-            opt.text = el;
-            opt.value = el;
-            sel.append(opt);
-        }
-
-        let mod_files_block = document.getElementById("mod_files_block");
-        mod_files_block.select_file_template = sel;
-
-        let btn = document.createElement("button");
-        btn.type = "button";
-        btn.innerText = "+";
-        btn.onclick = function() { AddModCardFileSelect(); UpdateModCardButtonsState(); };
-        btn.disabled = document.getElementById("mod_card_container").disabled;
-
-        document.getElementById("mod_files_label").append(btn);
-    });
 }

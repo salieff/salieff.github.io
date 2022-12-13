@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 
     <head>
         <meta http-equiv="Content-type" content="text/html; charset=utf-8">
@@ -7,10 +7,12 @@
         <link rel="shortcut icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍂</text></svg>" type="image/x-icon">
 
         <style>
-            ul {overflow: auto; height: 54vh;}
+            html {height: 97%;}
+            body {display: flex; flex-flow: column; height: 100%; box-sizing: border-box; column-gap: 10px;}
+            ul {min-height: 0; flex: 1; overflow: auto;}
             li {cursor: pointer;}
             input[type="file"] {display: none;}
-            #mod_errors {color: red}
+            #mod_errors {color: red; resize: none;}
             .selected {background: #0f0;}
             .spacer {flex-grow: 1;}
             .custom-file-upload {border: 1px solid #767676; border-radius: 2px; background-color: #EFEFEF; font-size: small; display: inline-block; padding: 6px 12px; cursor: pointer;}
@@ -23,198 +25,196 @@
             #mod_list_filter_table > label {background-color: darkseagreen;}
         </style>
 
-        <script type="text/javascript" src="globals.js"></script>
-        <script type="text/javascript" src="helpers.js"></script>
-        <script type="text/javascript" src="checkerrors.js"></script>
-        <script type="text/javascript" src="autoindex.js"></script>
-        <script type="text/javascript" src="modcard.js"></script>
-        <script type="text/javascript" src="modslist.js"></script>
-        <script type="text/javascript" src="appreadme.js"></script>
-        <script type="text/javascript" src="index.js"></script>
+        <script src="globals.js"></script>
+        <script src="helpers.js"></script>
+        <script src="checkerrors.js"></script>
+        <script src="autoindex.js"></script>
+        <script src="modcard.js"></script>
+        <script src="modslist.js"></script>
+        <script src="appreadme.js"></script>
+        <script src="index.js"></script>
     </head>
 
     <body onload="BodyMain()">
-        <div style="display: flex; flex-direction: column; row-gap: 10px;">
+        <textarea id="app_readme" style="flex: 1; resize: none;"></textarea>
 
-            <textarea id="app_readme" rows="5"></textarea>
+        <div style="display: flex; column-gap: 10px; margin-top: 10px; margin-bottom: 30px;">
+            <button type="button" id="app_generate_readme_button">Generate list of added/modified mods</button>
+            <div class="spacer"></div>
+            <button type="button" id="app_readme_save_button" disabled>Save</button>
+            <button type="button" id="app_readme_undo_button" disabled>Undo</button>
+        </div>
 
-            <div style="display: flex; column-gap: 10px; margin-bottom: 30px;">
-                <button type="button" id="app_generate_readme_button">Generate list of added/modified mods</button>
-                <div class="spacer"></div>
-                <button type="button" id="app_readme_save_button" disabled>Save</button>
-                <button type="button" id="app_readme_undo_button" disabled>Undo</button>
-            </div>
+        <div style="display: flex; column-gap: 10px; height: calc(100% - 17em);"> <!-- List + modcard -->
 
-            <div style="display: flex; column-gap: 10px;">
+            <div id="mods_list_container" style="display: flex; flex-direction: column;">
 
-                <div id="mods_list_container" style="display: flex; flex-direction: column; row-gap: 10px;">
+                <div id="mod_list_filter_table" style="display: grid; grid-template-columns: auto minmax(auto, 1fr); gap: 5px; padding: 5px;">
+                    <label for="mod_list_title_filter">Title filter:</label>
+                    <input type="text" id="mod_list_title_filter" name="mod_list_title_filter">
 
-                    <div id="mod_list_filter_table" style="display: grid; grid-template-columns: auto minmax(auto, 1fr); gap: 5px; padding: 5px;">
-                        <label for="mod_list_title_filter">Title filter:</label>
-                        <input type="text" id="mod_list_title_filter" name="mod_list_title_filter">
+                    <label>Status filter:</label>
+                    <div style="display: flex; flex-wrap: wrap; column-gap: 15px;">
+                        <span>
+                            <input type="radio" id="mod_list_status_filter_all" name="mod_list_status_filter" checked>
+                            <label for="mod_list_status_filter_all">Все</label>
+                        </span>
 
-                        <label>Status filter:</label>
-                        <div style="display: flex; flex-wrap: wrap; column-gap: 15px;">
-                            <span>
-                                <input type="radio" id="mod_list_status_filter_all" name="mod_list_status_filter" checked>
-                                <label for="mod_list_status_filter_all">Все</label>
-                            </span>
+                        <span>
+                            <input type="radio" id="mod_list_status_filter_completed" name="mod_list_status_filter">
+                            <label for="mod_list_status_filter_completed">Окончен</label>
+                        </span>
 
-                            <span>
-                                <input type="radio" id="mod_list_status_filter_completed" name="mod_list_status_filter">
-                                <label for="mod_list_status_filter_completed">Окончен</label>
-                            </span>
+                        <span>
+                            <input type="radio" id="mod_list_status_filter_development" name="mod_list_status_filter">
+                            <label for="mod_list_status_filter_development">В разработке</label>
+                        </span>
 
-                            <span>
-                                <input type="radio" id="mod_list_status_filter_development" name="mod_list_status_filter">
-                                <label for="mod_list_status_filter_development">В разработке</label>
-                            </span>
+                        <span>
+                            <input type="radio" id="mod_list_status_filter_addon" name="mod_list_status_filter">
+                            <label for="mod_list_status_filter_addon">Надстройка</label>
+                        </span>
 
-                            <span>
-                                <input type="radio" id="mod_list_status_filter_addon" name="mod_list_status_filter">
-                                <label for="mod_list_status_filter_addon">Надстройка</label>
-                            </span>
+                        <span>
+                            <input type="radio" id="mod_list_status_filter_tutorial" name="mod_list_status_filter">
+                            <label for="mod_list_status_filter_tutorial">Обучаловка</label>
+                        </span>
 
-                            <span>
-                                <input type="radio" id="mod_list_status_filter_tutorial" name="mod_list_status_filter">
-                                <label for="mod_list_status_filter_tutorial">Обучаловка</label>
-                            </span>
+                        <span>
+                            <input type="radio" id="mod_list_status_filter_demo" name="mod_list_status_filter">
+                            <label for="mod_list_status_filter_demo">Демо</label>
+                        </span>
 
-                            <span>
-                                <input type="radio" id="mod_list_status_filter_demo" name="mod_list_status_filter">
-                                <label for="mod_list_status_filter_demo">Демо</label>
-                            </span>
-
-                            <span>
-                                <input type="radio" id="mod_list_status_filter_frozen" name="mod_list_status_filter">
-                                <label for="mod_list_status_filter_frozen">Заморожен</label>
-                            </span>
-                        </div>
-
-                        <label>Languages filter:</label>
-                        <div style="display: flex; flex-wrap: wrap; column-gap: 15px;">
-                            <span>
-                                <input type="checkbox" class="mod_list_lang_filter" id="mod_list_lang_filter_all" name="mod_list_lang_filter_all" value="all" checked>
-                                <label for="mod_list_lang_filter_all">All</label>
-                            </span>
-
-                            <span>
-                                <input type="checkbox" class="mod_list_lang_filter" id="mod_list_lang_filter_ru" name="mod_list_lang_filter_ru" value="ru" checked>
-                                <label for="mod_list_lang_filter_ru">Russian</label>
-                            </span>
-
-                            <span>
-                                <input type="checkbox" class="mod_list_lang_filter" id="mod_list_lang_filter_eng" name="mod_list_lang_filter_eng" value="eng" checked>
-                                <label for="mod_list_lang_filter_eng">English</label>
-                            </span>
-
-                            <span>
-                                <input type="checkbox" class="mod_list_lang_filter" id="mod_list_lang_filter_spa" name="mod_list_lang_filter_spa" value="spa" checked>
-                                <label for="mod_list_lang_filter_spa">Spanish</label>
-                            </span>
-                        </div>
-
-                        <label for="mod_list_broken_filter" id="mod_list_broken_filter_label">Only broken:</label>
-                        <div>
-                            <input type="checkbox" id="mod_list_broken_filter">
-                            <span class="spacer"></span>
-                        </div>
+                        <span>
+                            <input type="radio" id="mod_list_status_filter_frozen" name="mod_list_status_filter">
+                            <label for="mod_list_status_filter_frozen">Заморожен</label>
+                        </span>
                     </div>
 
-                    <ul id="mods_list"></ul>
+                    <label>Languages filter:</label>
+                    <div style="display: flex; flex-wrap: wrap; column-gap: 15px;">
+                        <span>
+                            <input type="checkbox" class="mod_list_lang_filter" id="mod_list_lang_filter_all" name="mod_list_lang_filter_all" value="all" checked>
+                            <label for="mod_list_lang_filter_all">All</label>
+                        </span>
 
-                    <div style="display: flex; column-gap: 10px;">
-                        <button type="button" id="add_list_entry_button">Add</button>
-                        <button type="button" id="delete_list_entry_button">Delete</button>
+                        <span>
+                            <input type="checkbox" class="mod_list_lang_filter" id="mod_list_lang_filter_ru" name="mod_list_lang_filter_ru" value="ru" checked>
+                            <label for="mod_list_lang_filter_ru">Russian</label>
+                        </span>
+
+                        <span>
+                            <input type="checkbox" class="mod_list_lang_filter" id="mod_list_lang_filter_eng" name="mod_list_lang_filter_eng" value="eng" checked>
+                            <label for="mod_list_lang_filter_eng">English</label>
+                        </span>
+
+                        <span>
+                            <input type="checkbox" class="mod_list_lang_filter" id="mod_list_lang_filter_spa" name="mod_list_lang_filter_spa" value="spa" checked>
+                            <label for="mod_list_lang_filter_spa">Spanish</label>
+                        </span>
+                    </div>
+
+                    <label for="mod_list_broken_filter" id="mod_list_broken_filter_label">Only broken:</label>
+                    <div>
+                        <input type="checkbox" id="mod_list_broken_filter">
+                        <span class="spacer"></span>
                     </div>
                 </div>
 
-                <div id="mod_card_container" style="display: flex; flex-direction: column; row-gap: 10px; flex: auto;">
-                    <div id="mod_card_table" style="display: grid; grid-template-columns: auto minmax(auto, 1fr); gap: 5px; padding: 5px;">
-                        <label for="mod_id">ID:</label>
-                        <div><input type="number" id="mod_id" name="mod_id" min="1" max="999999" style="width: 5em;"></div>
+                <ul id="mods_list"></ul>
 
-                        <label for="mod_title">Title:</label>
-                        <input type="text" id="mod_title" name="mod_title">
-
-                        <label>Status:</label>
-                        <div>
-                            <div>
-                                <input type="radio" id="mod_status_completed" name="mod_status" value="окончен">
-                                <label for="mod_status_completed">Окончен</label>
-                            </div>
-
-                            <div>
-                                <input type="radio" id="mod_status_development" name="mod_status" value="в разработке">
-                                <label for="mod_status_development">В разработке</label>
-                            </div>
-
-                            <div>
-                                <input type="radio" id="mod_status_addon" name="mod_status" value="надстройка">
-                                <label for="mod_status_addon">Надстройка</label>
-                            </div>
-
-                            <div>
-                                <input type="radio" id="mod_status_tutorial" name="mod_status" value="обучаловка">
-                                <label for="mod_status_tutorial">Обучаловка</label>
-                            </div>
-
-                            <div>
-                                <input type="radio" id="mod_status_demo" name="mod_status" value="демо">
-                                <label for="mod_status_demo">Демо</label>
-                            </div>
-
-                            <div>
-                                <input type="radio" id="mod_status_frozen" name="mod_status" value="заморожен">
-                                <label for="mod_status_frozen">Заморожен</label>
-                            </div>
-                        </div>
-
-                        <label>Languages:</label>
-                        <div>
-                            <div>
-                                <input type="checkbox" class="mod_lang" id="mod_lang_ru" name="mod_lang_ru" value="ru">
-                                <label for="mod_lang_ru">Russian</label>
-                            </div>
-
-                            <div>
-                                <input type="checkbox" class="mod_lang" id="mod_lang_eng" name="mod_lang_eng" value="eng">
-                                <label for="mod_lang_eng">English</label>
-                            </div>
-
-                            <div>
-                                <input type="checkbox" class="mod_lang" id="mod_lang_spa" name="mod_lang_spa" value="spa">
-                                <label for="mod_lang_spa">Spanish</label>
-                            </div>
-                        </div>
-
-                        <a target="_blank" id="mod_uri">Description:</a>
-                        <input type="text" id="mod_uri_text" name="mod_uri_text">
-
-                        <div><div id="mod_files_label" style="display: flex; column-gap: 3px;">Files:</div></div>
-                        <div id="mod_files_block" style="display: flex; flex-direction: column; row-gap: 3px;"></div>
-
-                        <label class="mod_errors_block">Errors:</label>
-                        <textarea class="mod_errors_block" id="mod_errors" readonly></textarea>
-                    </div>
-
-                    <div style="display: flex; column-gap: 10px; margin-left: 5px;">
-                        <button type="button" id="mod_card_save_button" disabled>Save</button>
-                        <button type="button" id="mod_card_undo_button" disabled>Undo</button>
-                    </div>
+                <div style="display: flex; column-gap: 10px;">
+                    <button type="button" id="add_list_entry_button">Add</button>
+                    <button type="button" id="delete_list_entry_button">Delete</button>
                 </div>
             </div>
 
-            <div style="display: flex; column-gap: 10px; margin-top: 30px;"">
-                <label class="custom-file-upload">
-                    <input id="index_load_local_button" type="file"/>
-                    Load index from local file
-                </label>
-                <button type="button" id="index_save_local_button">Save index as local file</button>
-                <div class="spacer"></div>
-                <button type="button" id="index_save_button" disabled>Commit index to server</button>
-                <button type="button" id="index_undo_button" disabled>Revert all changes</button>
+            <div id="mod_card_container" style="display: flex; flex-direction: column; row-gap: 10px; flex: auto;">
+                <div id="mod_card_table" style="display: grid; grid-template-columns: auto minmax(auto, 1fr); gap: 5px; padding: 5px;">
+                    <label for="mod_id">ID:</label>
+                    <div><input type="number" id="mod_id" name="mod_id" min="1" max="999999" style="width: 5em;"></div>
+
+                    <label for="mod_title">Title:</label>
+                    <input type="text" id="mod_title" name="mod_title">
+
+                    <label>Status:</label>
+                    <div>
+                        <div>
+                            <input type="radio" id="mod_status_completed" name="mod_status" value="окончен">
+                            <label for="mod_status_completed">Окончен</label>
+                        </div>
+
+                        <div>
+                            <input type="radio" id="mod_status_development" name="mod_status" value="в разработке">
+                            <label for="mod_status_development">В разработке</label>
+                        </div>
+
+                        <div>
+                            <input type="radio" id="mod_status_addon" name="mod_status" value="надстройка">
+                            <label for="mod_status_addon">Надстройка</label>
+                        </div>
+
+                        <div>
+                            <input type="radio" id="mod_status_tutorial" name="mod_status" value="обучаловка">
+                            <label for="mod_status_tutorial">Обучаловка</label>
+                        </div>
+
+                        <div>
+                            <input type="radio" id="mod_status_demo" name="mod_status" value="демо">
+                            <label for="mod_status_demo">Демо</label>
+                        </div>
+
+                        <div>
+                            <input type="radio" id="mod_status_frozen" name="mod_status" value="заморожен">
+                            <label for="mod_status_frozen">Заморожен</label>
+                        </div>
+                    </div>
+
+                    <label>Languages:</label>
+                    <div>
+                        <div>
+                            <input type="checkbox" class="mod_lang" id="mod_lang_ru" name="mod_lang_ru" value="ru">
+                            <label for="mod_lang_ru">Russian</label>
+                        </div>
+
+                        <div>
+                            <input type="checkbox" class="mod_lang" id="mod_lang_eng" name="mod_lang_eng" value="eng">
+                            <label for="mod_lang_eng">English</label>
+                        </div>
+
+                        <div>
+                            <input type="checkbox" class="mod_lang" id="mod_lang_spa" name="mod_lang_spa" value="spa">
+                            <label for="mod_lang_spa">Spanish</label>
+                        </div>
+                    </div>
+
+                    <a target="_blank" id="mod_uri">Description:</a>
+                    <input type="text" id="mod_uri_text" name="mod_uri_text">
+
+                    <div><div id="mod_files_label" style="display: flex; column-gap: 3px;">Files:</div></div>
+                    <div id="mod_files_block" style="display: flex; flex-direction: column; row-gap: 3px;"></div>
+
+                    <label class="mod_errors_block">Errors:</label>
+                    <textarea class="mod_errors_block" id="mod_errors" readonly></textarea>
+                </div>
+
+                <div style="display: flex; column-gap: 10px; margin-left: 5px;">
+                    <button type="button" id="mod_card_save_button" disabled>Save</button>
+                    <button type="button" id="mod_card_undo_button" disabled>Undo</button>
+                </div>
             </div>
+        </div>
+
+        <div style="display: flex; column-gap: 10px; margin-top: 30px;">
+            <label class="custom-file-upload">
+                <input id="index_load_local_button" type="file">
+                Load index from local file
+            </label>
+            <button type="button" id="index_save_local_button">Save index as local file</button>
+            <div class="spacer"></div>
+            <button type="button" id="index_save_button" disabled>Commit index to server</button>
+            <button type="button" id="index_undo_button" disabled>Revert all changes</button>
+        </div>
     </body>
 
 </html>

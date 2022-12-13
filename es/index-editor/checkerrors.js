@@ -11,6 +11,18 @@ function CheckModErrorsDoublingFiles(mod)
     return err_arr;
 }
 
+function CheckModErrorsNonExistentFiles(mod)
+{
+    let err_arr = [];
+
+    if (mod.hasOwnProperty("files_android"))
+        for (let mod_file of mod.files_android)
+            if (!ModFilesList.includes(mod_file))
+                err_arr.push("There is non-existent " + mod_file + " in mod.files_android");
+
+    return err_arr;
+}
+
 function CheckModErrorsDoublingDescription(mod)
 {
     let err_arr = [];
@@ -98,5 +110,6 @@ function CheckModErrors(mod)
            CheckModErrorsDoublingId(mod),
            CheckModErrorsDoublingTitle(mod),
            CheckModErrorsDoublingDescription(mod),
-           CheckModErrorsDoublingFiles(mod));
+           CheckModErrorsDoublingFiles(mod),
+           CheckModErrorsNonExistentFiles(mod));
 }
