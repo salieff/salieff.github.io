@@ -103,6 +103,25 @@ function FetchIndex()
     .catch(error => ShowModalDialog("GET error", error, "Mods index wasn't loaded from the server"));
 }
 
+function LockIndexRenew(lock_timeout)
+{
+    if (!WebDavLockToken)
+        return;
+
+    fetch("../project2.json", {
+        method: 'LOCK',
+        cache: "no-store",
+        headers: { 'If': "(" + WebDavLockToken + ")" }
+    })
+    .then(response => {
+        if (!response.ok)
+            throw new Error(response.url + " : " + response.statusText + " (" + response.status + ")", { cause: response.status });
+    })
+    .catch(error => {
+        ShowModalDialog("LOCK error", error, "Failed to renew lock in " + lock_timeout + " seconds");
+    });
+}
+
 function LockIndexOrStop(success_function)
 {
     fetch("../project2.json", {method: 'LOCK', cache: "no-store"})
@@ -114,10 +133,26 @@ function LockIndexOrStop(success_function)
 
             success_function();
 
-            return;
+            return response.text();
         }
 
         throw new Error(response.url + " : " + response.statusText + " (" + response.status + ")", { cause: response.status });
+    })
+    .then(body_text => {
+        let lock_timeout = 30;
+
+        try
+        {
+            xml_parser = new DOMParser();
+            xml_doc = xml_parser.parseFromString(body_text, "text/xml");
+            lock_timeout = xml_doc.getElementsByTagName("D:timeout")[0].childNodes[0].nodeValue.replace(/\D+/g, "") / 2;
+        }
+        catch(err)
+        {
+            lock_timeout = 30;
+        }
+
+        LockRenewIntervalId = setInterval(LockIndexRenew, lock_timeout * 1000, lock_timeout)
     })
     .catch(error => {
         if (error.cause == 423)
@@ -138,6 +173,12 @@ function LockIndexOrStop(success_function)
 
 function UnlockIndex()
 {
+    if (LockRenewIntervalId)
+    {
+        clearInterval(LockRenewIntervalId);
+        LockRenewIntervalId = undefined;
+    }
+
     fetch("../project2.json", {
         method: 'UNLOCK',
         cache: "no-store",

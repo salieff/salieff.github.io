@@ -65,7 +65,7 @@ function CheckModErrorsStructIncludes(mod, prop, arr, err_arr)
 {
     let chk_arr = mod[prop];
     if (!Array.isArray(chk_arr))
-        chk_arr = chk_arr.replace(new RegExp("\s*,\s*", "g"), ",").split(",").filter(Boolean);
+        chk_arr = chk_arr.replace(new RegExp("\\s*,\\s*", "g"), ",").split(",").filter(Boolean);
 
     if (mod.hasOwnProperty(prop))
         for (bad_el of new Set(chk_arr.filter(el => !arr.includes(el))))

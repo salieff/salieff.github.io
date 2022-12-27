@@ -1,4 +1,5 @@
 let WebDavLockToken = undefined;
+let LockRenewIntervalId = undefined;
 let ModFilesList = [];
 let GlobalIndex = {appTitle: "Установщик дополнений для Everlasting Summer", appReadMe: "", packs: []};
 let GlobalIndexBackup = {appTitle: "Установщик дополнений для Everlasting Summer", appReadMe: "", packs: []};
