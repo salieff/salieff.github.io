@@ -64,7 +64,7 @@ function InitializeIndex()
 
             throw new Error(response.url + " : " + response.statusText + " (" + response.status + ")");
         })
-        .catch(error => alert("PUT error: " + error));
+        .catch(error => ShowModalDialog("PUT error", error, "Mods index wasn't copied to the server"));
     };
 
     document.getElementById("index_undo_button").onclick = function() {
@@ -100,7 +100,7 @@ function FetchIndex()
         throw new Error(response.url + " : " + response.statusText + " (" + response.status + ")");
     })
     .then(data => IndexDownloaded(data))
-    .catch(error => alert("GET error: " + error));
+    .catch(error => ShowModalDialog("GET error", error, "Mods index wasn't loaded from the server"));
 }
 
 function LockIndexOrStop(success_function)
@@ -123,12 +123,15 @@ function LockIndexOrStop(success_function)
         if (error.cause == 423)
         {
             window.stop();
-            document.getElementsByTagName("body")[0].innerHTML = "";
-            alert("Somebody else is editing ES index just now.\nPlease, wait for your turn!");
+            ShowModalDialog("Shared access to the index is denied",
+                            `<p>Somebody else is editing ES index just now</p>
+                             <p>It’s impossible to edit the index simultaneously together and merge the result afterwards, unfortunately</p>`,
+                            "Please, wait for your turn",
+                            () => { document.getElementsByTagName("body")[0].innerHTML = ""; });
         }
         else
         {
-            alert("LOCK error: " + error);
+            ShowModalDialog("LOCK error", error, "The user session was not locked on the server side");
         }
     });
 }
@@ -147,7 +150,7 @@ function UnlockIndex()
         throw new Error(response.url + " : " + response.statusText + " (" + response.status + ")");
     })
     .catch(error => {
-        alert("Can't unlock index\nNobody else can edit it\n" + error);
+        ShowModalDialog("UNLOCK error", error, "No one will be able to edit the index until the timeout expires");
     });
 }
 

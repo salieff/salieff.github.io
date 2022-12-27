@@ -1,0 +1,55 @@
+html {
+    height: 97%;
+}
+
+body {
+    height: 100%;
+}
+
+ul {
+    min-height: 0;
+    flex: 1;
+    overflow: auto;
+}
+
+li {
+    cursor: pointer;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+#mod_errors {
+    color: red;
+    resize: none;
+}
+
+.selected {
+    background: #0f0;
+}
+
+.spacer {
+    flex-grow: 1;
+}
+
+.custom-file-upload {
+    border: 1px solid #767676;
+    border-radius: 2px;
+    background-color: #EFEFEF;
+    font-size: small;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+
+#mod_card_table>div,
+#mod_card_table>label,
+#mod_card_table>a {
+    background-color: #96D4D4;
+}
+
+#mod_list_filter_table>div,
+#mod_list_filter_table>label {
+    background-color: darkseagreen;
+}

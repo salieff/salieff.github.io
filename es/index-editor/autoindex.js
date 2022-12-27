@@ -36,5 +36,5 @@ function LoadAutoIndex(url, callback_fn, in_array = null, in_counter_object = nu
         throw new Error(response.url + " : " + response.statusText + " (" + response.status + ")");
     })
     .then(html_str => ParseAutoIndex(url, html_str, callback_fn, ret_array, counter_object))
-    .catch(error => alert("Autoindex GET error: " + error));
+    .catch(error => ShowModalDialog("Autoindex GET error", error, "File list will be unavailable"));
 }
