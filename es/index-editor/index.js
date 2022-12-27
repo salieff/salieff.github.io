@@ -141,6 +141,7 @@ function UnlockIndex()
     fetch("../project2.json", {
         method: 'UNLOCK',
         cache: "no-store",
+        keepalive: true,
         headers: { 'Lock-Token': WebDavLockToken }
     })
     .then(response => {
