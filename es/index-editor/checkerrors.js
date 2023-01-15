@@ -2,11 +2,22 @@ function CheckModErrorsDoublingFiles(mod)
 {
     let err_arr = [];
 
+    if (!mod.hasOwnProperty("files_android") || mod.files_android.length == 0)
+        return err_arr;
+
+    let mod_files_android = mod.files_android.map(f => f.toLowerCase().trim());
+
     for (let other_mod of GlobalIndex.packs.filter(m => m != mod))
-        if (mod.hasOwnProperty("files_android") && other_mod.hasOwnProperty("files_android"))
-            for (let andr_file of mod.files_android)
-                if (other_mod.files_android.includes(andr_file))
-                    err_arr.push(other_mod.idmod + " " + other_mod.title + " [" + other_mod.status + "] <" + other_mod.lang + "> refers to the same file " + andr_file);
+    {
+        if (!other_mod.hasOwnProperty("files_android") || other_mod.files_android.length == 0)
+            continue;
+
+        let other_mod_files_android = other_mod.files_android.map(f => f.toLowerCase().trim());
+
+        for (let andr_file of mod_files_android)
+            if (other_mod_files_android.includes(andr_file))
+                err_arr.push(other_mod.idmod + " " + other_mod.title + " [" + other_mod.status + "] <" + other_mod.lang + "> refers to the same file " + andr_file);
+    }
 
     return err_arr;
 }
