@@ -185,11 +185,11 @@ function AddModCardFileSelect(file_name = null) {
 
 function LoadModFilesList(success_function)
 {
-    LoadAutoIndex("../android/", function(arr) {
-        ModFilesList = arr.map(el => el.replace(new RegExp("^../"), ""));
+    LoadAutoIndex("../es/android/", function(arr) {
+        ModFilesList = arr.map(el => el.replace(new RegExp("^../es/"), ""));
 
         let sel = document.createElement("select");
-        for (let el of arr.map(el => el.replace(new RegExp("^../android/"), "")))
+        for (let el of arr.map(el => el.replace(new RegExp("^../es/android/"), "")))
         {
             let opt = document.createElement("option");
             opt.text = el;

@@ -46,7 +46,7 @@ function UpdateIndexButtonsState()
 function InitializeIndex()
 {
     document.getElementById("index_save_button").onclick = function() {
-        fetch("../project2.json", {
+        fetch("../es/project2.json", {
             cache: "no-store",
             method: 'PUT',
             headers: { 'Content-Type': 'application/json',
@@ -92,7 +92,7 @@ function InitializeIndex()
 
 function FetchIndex()
 {
-    fetch("../project2.json", {cache: "no-store"})
+    fetch("../es/project2.json", {cache: "no-store"})
     .then(response => {
         if (response.ok)
             return response.json();
@@ -108,7 +108,7 @@ function LockIndexRenew(lock_timeout)
     if (!WebDavLockToken)
         return;
 
-    fetch("../project2.json", {
+    fetch("../es/project2.json", {
         method: 'LOCK',
         cache: "no-store",
         headers: { 'If': "(" + WebDavLockToken + ")" }
@@ -124,7 +124,7 @@ function LockIndexRenew(lock_timeout)
 
 function LockIndexOrStop(success_function)
 {
-    fetch("../project2.json", {method: 'LOCK', cache: "no-store"})
+    fetch("../es/project2.json", {method: 'LOCK', cache: "no-store"})
     .then(response => {
         if (response.ok)
         {
@@ -179,7 +179,7 @@ function UnlockIndex()
         LockRenewIntervalId = undefined;
     }
 
-    fetch("../project2.json", {
+    fetch("../es/project2.json", {
         method: 'UNLOCK',
         cache: "no-store",
         keepalive: true,
