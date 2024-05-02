@@ -5,7 +5,7 @@
    А если клиент отваливается, то LOCK автоматически освободится через 60 секунд, и другие клиенты смогут работать с индексом.
    У меня можно сделать отдельный файлик /etc/nginx/conf.d/es-lock-zone.conf с таким содержанием:
         dav_ext_lock_zone zone=esindex:10m timeout=60;
-   лежит вот тут: https://github.com/salieff/salieff.github.io/blob/master/es/etc/nginx/conf.d/es-lock-zone.conf
+   лежит вот тут: https://github.com/salieff/salieff.github.io/blob/master/index-editor/etc/nginx/conf.d/es-lock-zone.conf
 
 3. Создать сторидж аутентификации и добавить туда всех бойцов, задать им пароли:
     touch /usr/share/nginx/html/es/.htpasswd
@@ -29,10 +29,10 @@
                 auth_basic_user_file /usr/share/nginx/html/es/.htpasswd;
             }
         }
-   лежит вот тут: https://github.com/salieff/salieff.github.io/blob/master/es/etc/nginx/default.d/es-location.conf
+   лежит вот тут: https://github.com/salieff/salieff.github.io/blob/master/index-editor/etc/nginx/default.d/es-location.conf
 
-5. Сложить файлы редактора индекса в /usr/share/nginx/html/es/index-editor.
-   Редактор взять тут: https://github.com/salieff/salieff.github.io/tree/master/es/index-editor
+5. Сложить файлы редактора индекса в /usr/share/nginx/html/index-editor.
+   Редактор взять тут: https://github.com/salieff/salieff.github.io/tree/master/index-editor
 
 6. Дать nginx-у права на редактирование индекса:
         chown nginx.nginx /usr/share/nginx/html/es

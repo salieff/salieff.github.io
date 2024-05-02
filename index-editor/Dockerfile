@@ -36,7 +36,7 @@ RUN ln -s /etc/nginx/sites-available/es-mods-site /etc/nginx/sites-enabled
 RUN rm -f /var/www/html/*
 RUN cd /var/www/html && git clone https://github.com/salieff/salieff.github.io.git .
 RUN find /var/www/html -mindepth 1 ! -regex '^/var/www/html/index-editor\(/.*\)?' -delete
-RUN cd /var/www/html/index-editor && rm -f Dockerfile && rm -f readme.txt
+RUN cd /var/www/html/index-editor && rm -f Dockerfile && rm -f readme*.txt && rm -rf etc
 RUN sed -i -e 's/user www-data;/user root;/' /etc/nginx/nginx.conf 
 
 EXPOSE 80
